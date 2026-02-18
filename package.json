@@ -1,0 +1,40 @@
+{
+  "name": "ctrl-financeiro",
+  "version": "1.0.0",
+  "description": "Sistema completo de controle financeiro com React e SQLite",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "NODE_ENV=production node server/server.js",
+    "server": "nodemon server/server.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd client && npm install",
+    "build": "cd client && npm run build",
+    "production": "npm run build && npm start",
+    "start:port": "NODE_ENV=production PORT=3000 node server/server.js"
+  },
+  "keywords": [
+    "finance",
+    "control",
+    "react",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "form-data": "^4.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "mailgun.js": "^12.6.0",
+    "pg": "^8.18.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "nodemon": "^3.0.1"
+  }
+}

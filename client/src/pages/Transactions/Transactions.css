@@ -1,0 +1,312 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.page-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.filters-card {
+  margin-bottom: 24px;
+}
+
+.filters-card h3 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.filters-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.totals-bar {
+  display: flex;
+  gap: 24px;
+  padding: 16px 24px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px var(--shadow);
+  margin-bottom: 24px;
+}
+
+.total-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.total-value {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.total-value.income {
+  color: var(--secondary);
+}
+
+.total-value.expense {
+  color: var(--danger);
+}
+
+.transactions-table-wrapper {
+  overflow-x: auto;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.transactions-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--bg-tertiary);
+}
+
+.transactions-table th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.transactions-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.transactions-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.type-badge.receita {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--secondary);
+}
+
+.type-badge.despesa {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.amount {
+  font-weight: 700;
+}
+
+.amount.receita {
+  color: var(--secondary);
+}
+
+.amount.despesa {
+  color: var(--danger);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.btn-icon.edit:hover {
+  background: var(--primary);
+}
+
+.btn-icon.delete:hover {
+  background: var(--danger);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-tertiary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+  .filters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .transactions-page {
+    padding-bottom: 80px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+  }
+
+  .page-header .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .filters-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .filters-card h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .filters-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filters-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .totals-bar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .total-item {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .total-value {
+    font-size: 16px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .transactions-table th,
+  .transactions-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  .transactions-table th:nth-child(3),
+  .transactions-table th:nth-child(4),
+  .transactions-table td:nth-child(3),
+  .transactions-table td:nth-child(4) {
+    display: none;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-icon {
+    font-size: 36px;
+    color: var(--text-tertiary);
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .empty-state .btn {
+    width: 100%;
+  }
+}
