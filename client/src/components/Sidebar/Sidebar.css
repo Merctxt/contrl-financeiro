@@ -263,7 +263,13 @@
   font-size: 16px;
 }
 
-@media (max-width: 768px) {
+/* Botão de logout mobile (escondido em desktop) */
+.nav-item-logout {
+  display: none;
+}
+
+/* Mobile - detecta tanto portrait (largura pequena) quanto landscape (altura pequena) */
+@media (max-width: 768px), (max-height: 500px) {
   .sidebar {
     width: 100%;
     height: auto;
@@ -314,6 +320,19 @@
   .nav-item span:last-child {
     display: block;
     font-size: 10px;
+  }
+
+  /* Mostrar botão de logout no mobile */
+  .nav-item-logout {
+    display: flex;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .nav-item-logout:hover {
+    background: var(--hover);
   }
 
   .sidebar-footer {

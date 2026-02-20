@@ -11,7 +11,8 @@
   min-height: 100vh;
 }
 
-@media (max-width: 768px) {
+/* Mobile - detecta tanto portrait (largura pequena) quanto landscape (altura pequena) */
+@media (max-width: 768px), (max-height: 500px) {
   .layout {
     flex-direction: column;
   }

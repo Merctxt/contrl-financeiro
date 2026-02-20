@@ -77,6 +77,11 @@ const Sidebar = () => {
           <FiSettings className="nav-icon" />
           <span>Configurações</span>
         </NavLink>
+
+        <button onClick={handleLogout} className="nav-item nav-item-logout" title="Sair">
+          <FiLogOut className="nav-icon" />
+          <span>Sair</span>
+        </button>
       </nav>
 
       {showPopup && (
