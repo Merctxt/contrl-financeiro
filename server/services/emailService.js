@@ -43,10 +43,6 @@ Equipe Organiza Aí
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
   <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
     <div style="background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
-      <!-- Header -->
-      <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 32px; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 28px;">💰 Organiza Aí</h1>
-      </div>
       
       <!-- Content -->
       <div style="padding: 32px;">
@@ -73,12 +69,6 @@ Equipe Organiza Aí
         <p style="color: #6366f1; font-size: 14px; word-break: break-all; background: #f3f4f6; padding: 12px; border-radius: 6px; margin: 0 0 24px 0;">
           ${resetUrl}
         </p>
-        
-        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin: 24px 0;">
-          <p style="color: #92400e; font-size: 14px; margin: 0;">
-            ⚠️ Este link é válido por <strong>1 hora</strong>. Após esse período, você precisará solicitar um novo link.
-          </p>
-        </div>
         
         <p style="color: #9ca3af; font-size: 14px; line-height: 1.6; margin: 0;">
           Se você não solicitou a recuperação de senha, pode ignorar este email com segurança.
