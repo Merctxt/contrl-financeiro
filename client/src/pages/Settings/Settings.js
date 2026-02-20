@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle } from 'react-icons/fi';
+import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload } from 'react-icons/fi';
 import './Settings.css';
 
 const Settings = () => {
@@ -215,6 +215,29 @@ const Settings = () => {
                 {passwordLoading ? 'Alterando...' : 'Alterar Senha'}
               </button>
             </form>
+          </div>
+
+          {/* App Mobile - visível apenas no mobile */}
+          <div className="card settings-card mobile-app-card">
+            <h3><FiSmartphone /> Atualizações do App</h3>
+            <div className="mobile-app-info">
+              <p className="app-description">
+                Mantenha seu aplicativo sempre atualizado para ter acesso às últimas funcionalidades e correções!
+              </p>
+              <ul className="app-features">
+                <li>✓ Novos recursos e melhorias</li>
+                <li>✓ Correção de bugs</li>
+                <li>✓ Melhor desempenho e segurança</li>
+              </ul>
+              <a 
+                href="https://github.com/Merctxt/contrl-financeiro/releases" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn btn-primary btn-download-app"
+              >
+                <FiDownload /> Verificar Atualizações
+              </a>
+            </div>
           </div>
 
           {/* Aparência */}
