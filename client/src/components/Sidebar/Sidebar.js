@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -12,7 +12,10 @@ import {
   FiMoon, 
   FiLogOut, 
   FiTarget,
-  FiCheckCircle
+  FiCheckCircle,
+  FiX,
+  FiSmartphone,
+  FiDownload
 } from 'react-icons/fi';
 import './Sidebar.css';
 
@@ -20,6 +23,20 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    // Verificar se o usuário já fechou o popup
+    const popupClosed = localStorage.getItem('mobileAppPopupClosed');
+    if (!popupClosed) {
+      setShowPopup(true);
+    }
+  }, []);
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    localStorage.setItem('mobileAppPopupClosed', 'true');
+  };
 
   const handleLogout = () => {
     logout();
@@ -61,6 +78,30 @@ const Sidebar = () => {
           <span>Configurações</span>
         </NavLink>
       </nav>
+
+      {showPopup && (
+        <div className='sidebar-popup'>
+          <button className='popup-close' onClick={handleClosePopup} title="Fechar">
+            <FiX />
+          </button>
+          <div className='popup-icon'>
+            <FiSmartphone />
+          </div>
+          <h3>Novidades!</h3>
+          <p>Agora temos um <strong>app Android</strong>!</p>
+          <p className='popup-description'>
+            Gerencie suas finanças direto do seu celular
+          </p>
+          <a 
+            href="https://github.com/Merctxt/contrl-financeiro/releases" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className='popup-button'
+          >
+            <FiDownload /> Baixar App
+          </a>
+        </div>
+      )}
 
       <div className="sidebar-footer">
         <button 
