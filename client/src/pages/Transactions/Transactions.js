@@ -114,11 +114,11 @@ const Transactions = () => {
 
   const totalReceitas = transactions
     .filter(t => t.type === 'receita')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
 
   const totalDespesas = transactions
     .filter(t => t.type === 'despesa')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
 
   if (loading) {
     return (
