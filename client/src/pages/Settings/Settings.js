@@ -3,7 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload, FiEdit, FiMessageSquare } from 'react-icons/fi';
+import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload, FiMonitor, FiLogOut, FiMessageSquare, FiEdit } from 'react-icons/fi';
+import packageJson from '../../../package.json';
 import './Settings.css';
 
 const Settings = () => {
@@ -276,6 +277,17 @@ const Settings = () => {
               <FiEdit /> Enviar Sugestão / Reportar Bug
             </a>
           </div>
+
+          {/* Informações do sistema */}
+          <div className="card settings-card">
+            <h3><FiMonitor /> Informações do Sistema</h3>
+            <p className="system-info">
+              <strong>Versão do App:</strong> {packageJson.version}<br />
+              <strong>Status:</strong> <span style={{ color: 'green' }}>Online</span><br />
+              <strong>Navegador:</strong> {navigator.userAgent || 'Desconecido'}
+            </p>
+          </div>
+        
 
           {/* Zona de Perigo */}
           <div className="card settings-card danger-zone">

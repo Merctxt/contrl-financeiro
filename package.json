@@ -1,7 +1,7 @@
 {
   "name": "ctrl-financeiro",
-  "version": "1.0.0",
-  "description": "Sistema completo de controle financeiro com React e SQLite",
+  "version": "v2026.02.21-b10",
+  "description": "Sistema completo de controle financeiro",
   "main": "server/server.js",
   "scripts": {
     "start": "NODE_ENV=production node server/server.js",
