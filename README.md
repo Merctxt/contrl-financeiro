@@ -5,7 +5,7 @@
 
 Organiza Aí is a full-stack personal finance management application designed to help you track income, expenses, and budgets with ease. Built with React, Node.js, and PostgreSQL, it provides a clean, responsive interface for managing your financial life.
 
-![image demo](https://i.imgur.com/54UsQlV.png)
+
 
 > **Live Demo:** [financeiro.giovannidev.com](https://financeiro.giovannidev.com/)
 
