@@ -3,8 +3,69 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const emailService = require('../services/emailService');
+const pool = require('../config/database');
 
 class AuthController {
+  // Helper: Criar hash do token para armazenamento seguro
+  static createTokenHash(token) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
+
+  // Helper: Extrair informação do dispositivo do User-Agent
+  static getDeviceInfo(userAgent) {
+    if (!userAgent) return 'Desconhecido';
+    
+    // Detectar navegadores
+    const browsers = {
+      'Chrome': /Chrome\/[\d.]+/,
+      'Firefox': /Firefox\/[\d.]+/,
+      'Safari': /Safari\/[\d.]+/,
+      'Edge': /Edg\/[\d.]+/,
+      'Opera': /Opera\/[\d.]+/
+    };
+    
+    // Detectar sistemas operacionais
+    const os = {
+      'Windows': /Windows NT/,
+      'Mac': /Mac OS X/,
+      'Linux': /Linux/,
+      'Android': /Android/,
+      'iOS': /iPhone|iPad/
+    };
+    
+    let browser = 'Navegador';
+    let system = 'Sistema';
+    
+    for (const [name, regex] of Object.entries(browsers)) {
+      if (regex.test(userAgent)) {
+        browser = name;
+        break;
+      }
+    }
+    
+    for (const [name, regex] of Object.entries(os)) {
+      if (regex.test(userAgent)) {
+        system = name;
+        break;
+      }
+    }
+    
+    return `${browser} em ${system}`;
+  }
+
+  // Helper: Criar sessão no banco
+  static async createSession(userId, token, req) {
+    const tokenHash = AuthController.createTokenHash(token);
+    const deviceInfo = AuthController.getDeviceInfo(req.headers['user-agent']);
+    const ipAddress = req.ip || req.connection.remoteAddress || 'Desconhecido';
+    
+    await pool.query(
+      `INSERT INTO sessions (user_id, token_hash, device_info, ip_address) 
+       VALUES ($1, $2, $3, $4)`,
+      [userId, tokenHash, deviceInfo, ipAddress]
+    );
+  }
+
   static async register(req, res) {
     try {
       const { name, email, password } = req.body;
@@ -36,6 +97,9 @@ class AuthController {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
+
+      // Criar sessão no banco
+      await AuthController.createSession(user.id, token, req);
 
       res.status(201).json({
         message: 'Usuário criado com sucesso',
@@ -79,6 +143,9 @@ class AuthController {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
+
+      // Criar sessão no banco
+      await AuthController.createSession(user.id, token, req);
 
       res.json({
         message: 'Login realizado com sucesso',

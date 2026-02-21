@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
@@ -28,6 +28,72 @@ const Settings = () => {
   const [deletePassword, setDeletePassword] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Estado para sessões
+  const [sessions, setSessions] = useState([]);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [revokeLoading, setRevokeLoading] = useState(false);
+
+  // Carregar sessões ao montar o componente
+  useEffect(() => {
+    loadSessions();
+  }, []);
+
+  const loadSessions = async () => {
+    try {
+      const data = await api.getSessions(token);
+      if (data.sessions) {
+        setSessions(data.sessions);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar sessões:', error);
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
+
+  const handleRevokeSession = async (sessionId) => {
+    if (!window.confirm('Tem certeza que deseja encerrar esta sessão?')) {
+      return;
+    }
+
+    try {
+      await api.revokeSession(token, sessionId);
+      loadSessions();
+    } catch (error) {
+      console.error('Erro ao revogar sessão:', error);
+      alert('Erro ao encerrar sessão');
+    }
+  };
+
+  const handleRevokeOtherSessions = async () => {
+    if (!window.confirm('Tem certeza que deseja encerrar todas as outras sessões?')) {
+      return;
+    }
+
+    setRevokeLoading(true);
+    try {
+      const result = await api.revokeOtherSessions(token);
+      alert(result.message || 'Outras sessões encerradas com sucesso');
+      loadSessions();
+    } catch (error) {
+      console.error('Erro ao revogar outras sessões:', error);
+      alert('Erro ao encerrar sessões');
+    } finally {
+      setRevokeLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -216,6 +282,59 @@ const Settings = () => {
                 {passwordLoading ? 'Alterando...' : 'Alterar Senha'}
               </button>
             </form>
+          </div>
+
+          {/* Sessões Ativas */}
+          <div className="card settings-card sessions-card">
+            <h3><FiMonitor /> Sessões Ativas</h3>
+            {sessionsLoading ? (
+              <div className="spinner-small"></div>
+            ) : (
+              <>
+                <p className="sessions-info">
+                  Você está logado em <strong>{sessions.length} dispositivo(s)</strong>
+                </p>
+                
+                <div className="sessions-list">
+                  {sessions.map((session) => (
+                    <div key={session.id} className={`session-item ${session.is_current ? 'current' : ''}`}>
+                      <div className="session-icon">
+                        <FiMonitor />
+                      </div>
+                      <div className="session-info">
+                        <div className="session-device">
+                          {session.device_info}
+                          {session.is_current && <span className="badge-current">Atual</span>}
+                        </div>
+                        <div className="session-details">
+                          <span>IP: {session.ip_address}</span>
+                          <span>Última atividade: {formatDate(session.last_activity)}</span>
+                        </div>
+                      </div>
+                      {!session.is_current && (
+                        <button
+                          className="btn-revoke"
+                          onClick={() => handleRevokeSession(session.id)}
+                          title="Encerrar sessão"
+                        >
+                          <FiLogOut />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {sessions.length > 1 && (
+                  <button
+                    className="btn btn-danger btn-revoke-all"
+                    onClick={handleRevokeOtherSessions}
+                    disabled={revokeLoading}
+                  >
+                    <FiLogOut /> {revokeLoading ? 'Encerrando...' : 'Encerrar Outras Sessões'}
+                  </button>
+                )}
+              </>
+            )}
           </div>
 
           {/* App Mobile - visível apenas no mobile */}

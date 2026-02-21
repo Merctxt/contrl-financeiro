@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const transactionRoutes = require('./routes/transactions');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/user');
+const sessionRoutes = require('./routes/sessions');
 
 // Inicializar banco de dados
 require('./config/database');
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/sessions', sessionRoutes);
 
 // Servir arquivos estáticos do React em produção
 if (process.env.NODE_ENV === 'production') {

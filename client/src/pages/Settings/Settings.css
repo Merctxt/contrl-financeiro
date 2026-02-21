@@ -46,6 +46,128 @@
   border: 1px solid var(--danger);
 }
 
+/* Sessões Ativas */
+.sessions-card {
+  grid-column: span 2;
+}
+
+.sessions-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.session-item.current {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.session-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  color: var(--primary);
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.session-info {
+  flex: 1;
+}
+
+.session-device {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-current {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.session-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.btn-revoke {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-revoke:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--danger);
+}
+
+.btn-revoke svg {
+  font-size: 18px;
+}
+
+.btn-revoke-all {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner-small {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
 /* App Mobile Card - escondido por padrão (apenas mobile) */
 .mobile-app-card {
   display: none;
@@ -275,6 +397,34 @@
   /* Mostrar card de app mobile apenas no mobile */
   .mobile-app-card {
     display: block;
+  }
+
+  /* Sessões responsivo */
+  .sessions-card {
+    grid-column: span 1;
+  }
+
+  .session-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .session-info {
+    width: 100%;
+  }
+
+  .session-device {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .session-details {
+    align-items: center;
+  }
+
+  .btn-revoke {
+    width: 100%;
   }
 
   .theme-label {

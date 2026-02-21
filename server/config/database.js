@@ -96,6 +96,27 @@ async function initializeDatabase() {
       )
     `);
 
+    // Tabela de Sessões
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS sessions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        token_hash TEXT NOT NULL UNIQUE,
+        device_info TEXT,
+        ip_address TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        is_active BOOLEAN DEFAULT TRUE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Criar índice para melhorar performance nas consultas de sessões
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_sessions_user_active 
+      ON sessions(user_id, is_active)
+    `);
+
     await client.query('COMMIT');
     console.log('Tabelas do banco de dados criadas/verificadas com sucesso');
   } catch (error) {

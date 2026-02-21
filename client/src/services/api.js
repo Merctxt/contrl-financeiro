@@ -195,6 +195,30 @@ const api = {
       body: JSON.stringify({ password })
     });
     return response.json();
+  },
+
+  // Sessões
+  getSessions: async (token) => {
+    const response = await fetch(`${API_URL}/sessions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  revokeSession: async (token, sessionId) => {
+    const response = await fetch(`${API_URL}/sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  revokeOtherSessions: async (token) => {
+    const response = await fetch(`${API_URL}/sessions/others/all`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
   }
 };
 
