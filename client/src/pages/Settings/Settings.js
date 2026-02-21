@@ -171,7 +171,7 @@ const Settings = () => {
   };
 
   return (
-    <Layout>
+    <Layout showMobileLogout={true}>
       <div className="settings-page fade-in">
         <div className="page-header">
           <div>
