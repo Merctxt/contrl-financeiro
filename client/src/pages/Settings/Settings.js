@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload } from 'react-icons/fi';
+import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload, FiEdit, FiMessageSquare } from 'react-icons/fi';
 import './Settings.css';
 
 const Settings = () => {
@@ -259,6 +259,22 @@ const Settings = () => {
                 <span className="toggle-slider"></span>
               </button>
             </div>
+          </div>
+
+          {/* Sugestões e reporte de bugs */}
+          <div className="card settings-card">
+            <h3><FiMessageSquare /> Sugestões e Reporte de Bugs</h3>
+            <p className="suggestions-text">
+              Tem alguma sugestão ou encontrou um bug? Nos informe para que possamos melhorar!
+            </p>
+            <a 
+              href="https://github.com/Merctxt/contrl-financeiro/issues" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+            >
+              <FiEdit /> Enviar Sugestão / Reportar Bug
+            </a>
           </div>
 
           {/* Zona de Perigo */}
