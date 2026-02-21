@@ -54,28 +54,7 @@ Follow these instructions to get a copy of the project up and running on your lo
     cp .env.example .env
     ```
 
-    Your `.env` file should look like this:
-
-    ```env
-    # PostgreSQL Database Connection URL
-    # Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
-    DATABASE_URL=postgresql://postgres:password@localhost:5432/finance_db
-
-    # Port for the backend server
-    PORT=5000
-
-    # Secret key for JWT digital signatures
-    JWT_SECRET=your_super_secret_jwt_key_here
-
-    # --- Optional for Password Reset feature ---
-    # Mailgun credentials
-    MAILGUN_API_KEY=your_mailgun_api_key
-    MAILGUN_DOMAIN=your.mailgun.domain.com
-    MAILGUN_FROM="Organiza Aí <noreply@your.mailgun.domain.com>"
-
-    # Frontend URL (used in password reset emails)
-    FRONTEND_URL=http://localhost:3000
-    ```
+    
 
 3.  **Install dependencies:**
     This command will install dependencies for both the server and the client.
@@ -94,14 +73,3 @@ Follow these instructions to get a copy of the project up and running on your lo
     *   **Frontend:** [http://localhost:3000](http://localhost:3000)
     *   **Backend API:** [http://localhost:5000](http://localhost:5000)
 
-## Deployment
-
-This project is configured for easy deployment using Docker.
-
-The `Dockerfile` in the root directory creates a production-ready image by:
-1.  Building the React frontend.
-2.  Installing only production dependencies for the Node.js server.
-3.  Copying the server files and the built frontend into a lean final image.
-4.  Exposing port 5000 and starting the server.
-
-The repository also includes a `railway.json` file for simplified deployment on [Railway](https://railway.app/).
