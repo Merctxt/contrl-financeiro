@@ -177,4 +177,16 @@ textarea.form-control {
     justify-content: center;
     padding: 14px;
   }
+
+  /* Modal abre na parte inferior no mobile */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0;
+  }
 }
