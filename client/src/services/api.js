@@ -219,6 +219,74 @@ const api = {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     return response.json();
+  },
+
+  // Metas Financeiras
+  getGoals: async (token, status = null) => {
+    const params = status ? `?status=${status}` : '';
+    const response = await fetch(`${API_URL}/goals${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  getGoal: async (token, id) => {
+    const response = await fetch(`${API_URL}/goals/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  createGoal: async (token, data) => {
+    const response = await fetch(`${API_URL}/goals`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+
+  updateGoal: async (token, id, data) => {
+    const response = await fetch(`${API_URL}/goals/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+
+  updateGoalAmount: async (token, id, amount) => {
+    const response = await fetch(`${API_URL}/goals/${id}/amount`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ amount })
+    });
+    return response.json();
+  },
+
+  completeGoal: async (token, id) => {
+    const response = await fetch(`${API_URL}/goals/${id}/complete`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  deleteGoal: async (token, id) => {
+    const response = await fetch(`${API_URL}/goals/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
   }
 };
 

@@ -322,17 +322,9 @@
     font-size: 10px;
   }
 
-  /* Mostrar botão de logout no mobile */
+  /* Esconder botão de logout no mobile (vai para o canto superior) */
   .nav-item-logout {
-    display: flex;
-    background: none;
-    border: none;
-    color: var(--text);
-    cursor: pointer;
-  }
-
-  .nav-item-logout:hover {
-    background: var(--hover);
+    display: none;
   }
 
   .sidebar-footer {

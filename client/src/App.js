@@ -8,6 +8,7 @@ import ResetPassword from './pages/Auth/ResetPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Transactions from './pages/Transactions/Transactions';
 import Categories from './pages/Categories/Categories';
+import Goals from './pages/goals/goals';
 import Reports from './pages/Reports/Reports';
 import Settings from './pages/Settings/Settings';
 
@@ -70,6 +71,11 @@ function App() {
             <Route path="/reports" element={
               <PrivateRoute>
                 <Reports />
+              </PrivateRoute>
+            } />
+            <Route path="/goals" element={
+              <PrivateRoute>
+                <Goals />
               </PrivateRoute>
             } />
             <Route path="/settings" element={

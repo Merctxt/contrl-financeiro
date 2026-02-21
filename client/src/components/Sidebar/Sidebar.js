@@ -73,6 +73,11 @@ const Sidebar = () => {
           <span>Relatórios</span>
         </NavLink>
 
+        <NavLink to="/goals" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <FiTarget className="nav-icon" />
+          <span>Metas</span>
+        </NavLink>
+
         <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <FiSettings className="nav-icon" />
           <span>Configurações</span>
