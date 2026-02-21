@@ -26,7 +26,7 @@
   .main-content {
     margin-left: 0;
     padding: 16px;
-    padding-top: 60px; /* Espaço para o botão de logout */
+    padding-top: 10px;
     padding-bottom: 90px; /* Espaço para o navbar fixo no rodapé */
     min-height: calc(100vh - 70px);
   }

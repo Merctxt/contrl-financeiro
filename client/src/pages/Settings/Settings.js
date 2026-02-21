@@ -403,7 +403,7 @@ const Settings = () => {
             <p className="system-info">
               <strong>Versão do App:</strong> {packageJson.version}<br />
               <strong>Status:</strong> <span style={{ color: 'green' }}>Online</span><br />
-              <strong>Navegador:</strong> {navigator.userAgent || 'Desconecido'}
+              <strong>Dispositivo:</strong> {navigator.userAgent || 'Desconhecido'}
             </p>
           </div>
         
