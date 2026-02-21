@@ -502,7 +502,12 @@
   font-size: 18px;
 }
 
-@media (max-width: 768px) {
+/* Mobile - detecta tanto portrait (largura pequena) quanto landscape (altura pequena) */
+@media (max-width: 768px), (max-height: 500px) {
+  .export-section {
+    display: none;
+  }
+
   .export-controls {
     flex-direction: column;
     align-items: stretch;
