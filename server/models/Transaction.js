@@ -153,12 +153,13 @@ class Transaction {
         COALESCE(c.name, 'Sem categoria') as name,
         COALESCE(c.color, '#6b7280') as color,
         c.icon,
+        COALESCE(c.type, $2) as type,
         COALESCE(SUM(t.amount), 0)::numeric::float8 as total,
         COUNT(*) as count
       FROM transactions t
       LEFT JOIN categories c ON t.category_id = c.id
       WHERE t.user_id = $1 AND t.type = $2 AND t.date BETWEEN $3 AND $4
-      GROUP BY c.id, c.name, c.color, c.icon
+      GROUP BY c.id, c.name, c.color, c.icon, c.type
       ORDER BY total DESC
     `;
     

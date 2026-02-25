@@ -50,6 +50,10 @@
     z-index: 999;
     transition: all 0.2s;
     box-shadow: 0 2px 8px var(--shadow);
+    /* Efeito glass */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .mobile-logout-btn:hover {
@@ -57,6 +61,7 @@
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px var(--shadow);
+    border-color: transparent;
   }
 
   .mobile-logout-btn:active {

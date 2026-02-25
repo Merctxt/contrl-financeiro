@@ -15,10 +15,8 @@ const Categories = () => {
     name: '',
     type: 'despesa',
     color: '#6366f1',
-    icon: '📦'
+    icon: 'FiTrendingDown'
   });
-
-  const iconOptions = ['💰', '💼', '📈', '🍔', '🚗', '🏠', '🏥', '📚', '🎮', '🛍️', '📄', '✈️', '🎬', '☕', '🏋️', '🐕', '💊', '🎁', '📦', '💡', '📱', '👕', '💇', '🎵'];
 
   const colorOptions = [
     '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899', 
@@ -52,7 +50,7 @@ const Categories = () => {
       }
       setShowForm(false);
       setEditingCategory(null);
-      setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: '📦' });
+      setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: 'FiTrendingDown' });
       loadCategories();
     } catch (error) {
       console.error('Erro ao salvar categoria:', error);
@@ -122,7 +120,7 @@ const Categories = () => {
               className="btn btn-primary"
               onClick={() => {
                 setEditingCategory(null);
-                setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: '📦' });
+                setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: 'FiTrendingDown' });
                 setShowForm(true);
               }}
             >
@@ -155,27 +153,18 @@ const Categories = () => {
                     id="type"
                     className="form-control"
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    onChange={(e) => {
+                      const newType = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        type: newType,
+                        icon: newType === 'receita' ? 'FiTrendingUp' : 'FiTrendingDown'
+                      });
+                    }}
                   >
                     <option value="receita">Receita</option>
                     <option value="despesa">Despesa</option>
                   </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Ícone</label>
-                <div className="icon-grid">
-                  {iconOptions.map((icon) => (
-                    <button
-                      type="button"
-                      key={icon}
-                      className={`icon-option ${formData.icon === icon ? 'selected' : ''}`}
-                      onClick={() => setFormData({ ...formData, icon })}
-                    >
-                      {icon}
-                    </button>
-                  ))}
                 </div>
               </div>
 
@@ -227,7 +216,7 @@ const Categories = () => {
                         className="category-icon"
                         style={{ backgroundColor: cat.color }}
                       >
-                        {cat.icon}
+                        {cat.type === 'receita' ? <FiTrendingUp /> : <FiTrendingDown />}
                       </span>
                       <span className="category-name">{cat.name}</span>
                     </div>
@@ -268,7 +257,7 @@ const Categories = () => {
                         className="category-icon"
                         style={{ backgroundColor: cat.color }}
                       >
-                        {cat.icon}
+                        {cat.type === 'receita' ? <FiTrendingUp /> : <FiTrendingDown />}
                       </span>
                       <span className="category-name">{cat.name}</span>
                     </div>

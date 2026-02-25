@@ -73,32 +73,33 @@ const Reports = () => {
   };
 
   const loadYearlyData = async () => {
-    const monthlyResults = [];
+    // Fazer todas as requisições em paralelo ao invés de sequencialmente
+    const promises = [];
     
     for (let month = 1; month <= 12; month++) {
       const startDate = `${selectedYear}-${String(month).padStart(2, '0')}-01`;
       const endDate = new Date(selectedYear, month, 0).toISOString().split('T')[0];
       
-      try {
-        const data = await api.getSummary(token, startDate, endDate);
-        monthlyResults.push({
-          month: months[month - 1].substring(0, 3),
-          fullMonth: months[month - 1],
-          receita: data.summary?.receita || 0,
-          despesa: data.summary?.despesa || 0,
-          saldo: (data.summary?.receita || 0) - (data.summary?.despesa || 0)
-        });
-      } catch (error) {
-        monthlyResults.push({
-          month: months[month - 1].substring(0, 3),
-          fullMonth: months[month - 1],
-          receita: 0,
-          despesa: 0,
-          saldo: 0
-        });
-      }
+      promises.push(
+        api.getSummary(token, startDate, endDate)
+          .then(data => ({
+            month: months[month - 1].substring(0, 3),
+            fullMonth: months[month - 1],
+            receita: data.summary?.receita || 0,
+            despesa: data.summary?.despesa || 0,
+            saldo: (data.summary?.receita || 0) - (data.summary?.despesa || 0)
+          }))
+          .catch(() => ({
+            month: months[month - 1].substring(0, 3),
+            fullMonth: months[month - 1],
+            receita: 0,
+            despesa: 0,
+            saldo: 0
+          }))
+      );
     }
     
+    const monthlyResults = await Promise.all(promises);
     setMonthlyData(monthlyResults);
   };
 
@@ -453,7 +454,7 @@ const Reports = () => {
                       className="breakdown-icon" 
                       style={{ backgroundColor: cat.color || COLORS[index % COLORS.length] }}
                     >
-                      {cat.icon || '📦'}
+                      {cat.type === 'receita' ? <FiTrendingUp /> : <FiTrendingDown />}
                     </span>
                     <span className="breakdown-name">{cat.name || 'Sem categoria'}</span>
                   </div>

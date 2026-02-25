@@ -283,6 +283,11 @@
     padding: 8px 4px;
     box-shadow: 0 -2px 10px var(--shadow);
     z-index: 1000;
+    /* Efeito glass */
+    background: rgba(94, 96, 100, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .sidebar-header {
