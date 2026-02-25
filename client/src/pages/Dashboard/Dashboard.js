@@ -98,6 +98,17 @@ const Dashboard = () => {
     return date.toLocaleDateString('pt-BR');
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return 'Bom dia';
+    } else if (hour >= 12 && hour < 18) {
+      return 'Boa tarde';
+    } else {
+      return 'Boa noite';
+    }
+  };
+
   const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899', '#14b8a6', '#8b5cf6', '#f43f5e'];
 
   if (loading) {
@@ -113,7 +124,7 @@ const Dashboard = () => {
       <div className="dashboard fade-in">
         <div className="dashboard-header">
           <div>
-            <h1>Olá, {user?.name?.split(' ')[0]}!</h1>
+            <h1>{getGreeting()}, {user?.name?.split(' ')[0]}!</h1>
             <p>Aqui está o resumo das suas finanças</p>
           </div>
           <div className="period-selector">
