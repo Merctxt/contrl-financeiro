@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { FiMail, FiLock, FiDollarSign, FiX, FiCheck } from 'react-icons/fi';
+import { FiMail, FiLock, FiDollarSign, FiX, FiCheck, FiCheckCircle } from 'react-icons/fi';
 import api from '../../services/api';
 import './Auth.css';
 
@@ -75,7 +75,7 @@ const Login = () => {
       <div className="auth-card fade-in">
         <div className="auth-header">
           <div className="auth-logo">
-            <span className="logo-icon"><FiDollarSign /></span>
+            <span className="logo-icon"><FiCheckCircle /></span>
             <span className="logo-text">Organiza Aí</span>
           </div>
           <h2>Bem-vindo de volta!</h2>
