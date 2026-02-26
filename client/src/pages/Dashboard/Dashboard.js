@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { FiTrendingUp, FiTrendingDown, FiDollarSign } from 'react-icons/fi';
+import { FiTrendingUp, FiTrendingDown, FiDollarSign, FiActivity } from 'react-icons/fi';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const { token, user } = useAuth();
   const [summary, setSummary] = useState({ receita: 0, despesa: 0, saldo: 0 });
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const [categoryBreakdown, setCategoryBreakdown] = useState([]);
+  const [goals, setGoals] = useState([]);
+  const [transactionCount, setTransactionCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('month');
+  const [financialScore, setFinancialScore] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -50,13 +51,12 @@ const Dashboard = () => {
     try {
       const { startDate, endDate } = getDateRange();
 
-      const [summaryData, transactionsData, breakdownData] = await Promise.all([
+      const [summaryData, transactionsData, goalsData, allTransactionsData] = await Promise.all([
         api.getSummary(token, startDate, endDate),
         api.getTransactions(token, { limit: 5 }),
-        api.getCategoryBreakdown(token, 'despesa', startDate, endDate)
+        api.getGoals(token, 'active'),
+        api.getTransactions(token, { startDate, endDate })
       ]);
-
-      console.log('Breakdown Data:', breakdownData); // Debug
 
       if (summaryData.summary) {
         setSummary(summaryData.summary);
@@ -66,18 +66,21 @@ const Dashboard = () => {
         setRecentTransactions(transactionsData.transactions);
       }
 
-      if (breakdownData.breakdown) {
-        // Garantir que os valores sejam números
-        const breakdown = breakdownData.breakdown.map(item => ({
-          ...item,
-          total: parseFloat(item.total) || 0
-        }));
-        console.log('Category Breakdown:', breakdown); // Debug
-        setCategoryBreakdown(breakdown);
-      } else {
-        console.log('No breakdown data'); // Debug
-        setCategoryBreakdown([]);
+      if (goalsData.goals) {
+        setGoals(goalsData.goals);
       }
+
+      if (allTransactionsData.transactions) {
+        setTransactionCount(allTransactionsData.transactions.length);
+      }
+
+      // Calcular score financeiro
+      const score = calculateFinancialScore(
+        summaryData.summary,
+        allTransactionsData.transactions?.length || 0,
+        goalsData.goals || []
+      );
+      setFinancialScore(score);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       alert('Erro ao carregar dados do dashboard');
@@ -109,7 +112,77 @@ const Dashboard = () => {
     }
   };
 
-  const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899', '#14b8a6', '#8b5cf6', '#f43f5e'];
+  const calculateFinancialScore = (summaryData, transactionsCount, goalsData) => {
+    let score = 0;
+
+    // 30% - Disciplina (registros no mês)
+    // Considera bom ter pelo menos 10 transações no mês
+    const disciplineScore = Math.min((transactionsCount / 10) * 300, 300);
+    score += disciplineScore;
+
+    // 30% - Controle (gastos vs receita)
+    // Melhor score quando despesas são menores que receitas
+    const receita = parseFloat(summaryData?.receita) || 0;
+    const despesa = parseFloat(summaryData?.despesa) || 0;
+    
+    if (receita > 0) {
+      const spendingRatio = despesa / receita;
+      if (spendingRatio <= 0.5) {
+        score += 300; // Excelente controle
+      } else if (spendingRatio <= 0.7) {
+        score += 250; // Bom controle
+      } else if (spendingRatio <= 0.9) {
+        score += 150; // Controle moderado
+      } else if (spendingRatio < 1) {
+        score += 100; // Controle básico
+      } else {
+        score += 0; // Gastando mais que ganha
+      }
+    }
+
+    // 20% - Crescimento (saldo positivo)
+    const saldo = receita - despesa;
+    if (saldo > 0) {
+      const growthRatio = saldo / (receita || 1);
+      score += Math.min(growthRatio * 1000, 200); // Máximo 200 pontos
+    }
+
+    // 20% - Metas (cumprimento)
+    if (goalsData && goalsData.length > 0) {
+      const completedGoals = goalsData.filter(g => g.status === 'completed').length;
+      const activeGoals = goalsData.filter(g => g.status === 'active');
+      
+      // Pontos por metas concluídas
+      score += completedGoals * 50;
+      
+      // Pontos por progresso em metas ativas
+      activeGoals.forEach(goal => {
+        const progress = (parseFloat(goal.current_amount) / parseFloat(goal.target_amount)) * 100;
+        score += Math.min(progress, 100) * 0.5; // Até 50 pontos por meta
+      });
+    } else {
+      // Sem metas, dá 50 pontos (10% do total possível) para não penalizar muito
+      score += 50;
+    }
+
+    return Math.min(Math.round(score), 1000); // Limita a 1000
+  };
+
+  const getScoreColor = (score) => {
+    if (score >= 800) return '#10b981'; // Verde forte
+    if (score >= 600) return '#34d399'; // Verde
+    if (score >= 400) return '#fbbf24'; // Amarelo
+    if (score >= 200) return '#f59e0b'; // Laranja
+    return '#ef4444'; // Vermelho
+  };
+
+  const getScoreLabel = (score) => {
+    if (score >= 800) return 'Excelente';
+    if (score >= 600) return 'Muito Bom';
+    if (score >= 400) return 'Bom';
+    if (score >= 200) return 'Regular';
+    return 'Precisa Melhorar';
+  };
 
   if (loading) {
     return (
@@ -176,34 +249,72 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-grid">
-          <div className="card chart-card">
-            <h3>Despesas por Categoria</h3>
-            {categoryBreakdown && categoryBreakdown.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={categoryBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="total"
-                    nameKey="name"
-                  >
-                    {categoryBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(value)} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="empty-state">
-                <p>Nenhuma despesa registrada no período</p>
+          <div className="card chart-card score-card">
+            <div className="score-header">
+              <h3><FiActivity /> Seu Score Financeiro</h3>
+              <span className="score-subtitle">Avaliação da sua maturidade financeira</span>
+            </div>
+            
+            <div className="score-gauge">
+              <svg viewBox="0 0 200 120" className="gauge-svg">
+                {/* Arco de fundo */}
+                <path
+                  d="M 20 100 A 80 80 0 0 1 180 100"
+                  fill="none"
+                  stroke="var(--bg-tertiary)"
+                  strokeWidth="20"
+                  strokeLinecap="round"
+                />
+                
+                {/* Arco colorido baseado no score */}
+                <path
+                  d="M 20 100 A 80 80 0 0 1 180 100"
+                  fill="none"
+                  stroke={getScoreColor(financialScore)}
+                  strokeWidth="20"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(financialScore / 1000) * 251.2} 251.2`}
+                  style={{ transition: 'all 1s ease-in-out' }}
+                />
+              </svg>
+              
+              <div className="score-display">
+                <div className="score-number" style={{ color: getScoreColor(financialScore) }}>
+                  {financialScore}
+                </div>
+                <div className="score-max">/ 1000</div>
+                <div className="score-label" style={{ color: getScoreColor(financialScore) }}>
+                  {getScoreLabel(financialScore)}
+                </div>
               </div>
-            )}
+            </div>
+
+            <div className="score-breakdown">
+              <div className="score-item">
+                <span className="score-item-label">Disciplina</span>
+                <span className="score-item-desc">{transactionCount} registros</span>
+              </div>
+              <div className="score-item">
+                <span className="score-item-label">Controle</span>
+                <span className="score-item-desc">
+                  {summary.receita > 0 
+                    ? `${((summary.despesa / summary.receita) * 100).toFixed(0)}% da renda` 
+                    : 'N/A'}
+                </span>
+              </div>
+              <div className="score-item">
+                <span className="score-item-label">Crescimento</span>
+                <span className="score-item-desc">
+                  {summary.saldo >= 0 ? 'Saldo positivo' : 'Saldo negativo'}
+                </span>
+              </div>
+              <div className="score-item">
+                <span className="score-item-label">Metas</span>
+                <span className="score-item-desc">
+                  {goals.length} {goals.length === 1 ? 'meta ativa' : 'metas ativas'}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="card transactions-card">
