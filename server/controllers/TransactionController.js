@@ -131,6 +131,17 @@ class TransactionController {
       res.status(500).json({ error: 'Erro ao buscar breakdown' });
     }
   }
+
+  static async getLifetimeStats(req, res) {
+    try {
+      const userId = req.user.id;
+      const stats = await Transaction.getLifetimeStats(userId);
+      res.json({ stats });
+    } catch (error) {
+      console.error('Erro ao buscar estatísticas totais:', error);
+      res.status(500).json({ error: 'Erro ao buscar estatísticas totais' });
+    }
+  }
 }
 
 module.exports = TransactionController;

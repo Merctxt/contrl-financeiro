@@ -224,7 +224,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="summary-cards">
+        <div className="summary-cards-dashboard">
           <div className="summary-card income">
             <div className="summary-icon"><FiTrendingUp /></div>
             <div className="summary-info">

@@ -18,6 +18,7 @@ const Reports = () => {
   const [monthlyData, setMonthlyData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [summary, setSummary] = useState({ receita: 0, despesa: 0, saldo: 0 });
+  const [lifetimeStats, setLifetimeStats] = useState({ total_receitas: 0, total_despesas: 0, saldo_total: 0 });
   
   // Estados para exportação
   const [exportStartDate, setExportStartDate] = useState('');
@@ -50,9 +51,10 @@ const Reports = () => {
       const startDate = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`;
       const endDate = new Date(selectedYear, selectedMonth, 0).toISOString().split('T')[0];
       
-      const [summaryData, breakdownData] = await Promise.all([
+      const [summaryData, breakdownData, lifetimeData] = await Promise.all([
         api.getSummary(token, startDate, endDate),
-        api.getCategoryBreakdown(token, 'despesa', startDate, endDate)
+        api.getCategoryBreakdown(token, 'despesa', startDate, endDate),
+        api.getLifetimeStats(token)
       ]);
 
       if (summaryData.summary) {
@@ -61,6 +63,10 @@ const Reports = () => {
 
       if (breakdownData.breakdown) {
         setCategoryData(breakdownData.breakdown);
+      }
+
+      if (lifetimeData.stats) {
+        setLifetimeStats(lifetimeData.stats);
       }
 
       // Carregar dados mensais do ano
@@ -315,6 +321,24 @@ const Reports = () => {
         </div>
 
         <div className="summary-cards">
+          <div className={`summary-card total ${lifetimeStats.saldo_total >= 0 ? 'positive' : 'negative'}`}>
+            <div className="summary-icon"><FiDollarSign /></div>
+            <div className="summary-info">
+              <span className="summary-label">Saldo Total</span>
+              <span className="summary-value">{formatCurrency(lifetimeStats.saldo_total)}</span>
+              <span className="summary-sublabel">Todo o período</span>
+            </div>
+          </div>
+
+          <div className="summary-card expense">
+            <div className="summary-icon"><FiTrendingDown /></div>
+            <div className="summary-info">
+              <span className="summary-label">Despesas Totais</span>
+              <span className="summary-value">{formatCurrency(lifetimeStats.total_despesas)}</span>
+              <span className="summary-sublabel">Todo o período</span>
+            </div>
+          </div>
+
           <div className="summary-card income">
             <div className="summary-icon"><FiTrendingUp /></div>
             <div className="summary-info">

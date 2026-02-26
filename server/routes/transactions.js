@@ -9,6 +9,7 @@ router.use(authenticateToken);
 router.post('/', TransactionController.create);
 router.get('/', TransactionController.getAll);
 router.get('/summary', TransactionController.getSummary);
+router.get('/lifetime-stats', TransactionController.getLifetimeStats);
 router.get('/breakdown', TransactionController.getCategoryBreakdown);
 router.get('/:id', TransactionController.getById);
 router.put('/:id', TransactionController.update);

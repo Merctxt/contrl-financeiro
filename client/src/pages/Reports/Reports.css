@@ -10,7 +10,7 @@
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 20px;
   margin-bottom: 24px;
 }
@@ -57,11 +57,28 @@
   color: #ef4444;
 }
 
+.summary-card.total.positive .summary-icon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.summary-card.total.negative .summary-icon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
 .summary-info {
   display: flex;
   flex-direction: column;
 }
 
+
+
+.summary-sublabel {
+  color: var(--text-secondary);
+  font-size: 11px;
+  margin-top: 4px;
+}
 .summary-label {
   color: var(--text-secondary);
   font-size: 13px;
@@ -79,6 +96,15 @@
 }
 
 .summary-card.expense .summary-value {
+  color: var(--danger);
+}
+
+
+.summary-card.total.positive .summary-value {
+  color: var(--primary);
+}
+
+.summary-card.total.negative .summary-value {
   color: var(--danger);
 }
 
@@ -251,6 +277,10 @@
 }
 
 @media (max-width: 1024px) {
+  .summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   .report-grid {
     grid-template-columns: 1fr;
   }

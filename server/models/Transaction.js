@@ -174,6 +174,25 @@ class Transaction {
     
     return rows;
   }
+
+  static async getLifetimeStats(userId) {
+    const sql = `
+      SELECT 
+        COALESCE(SUM(CASE WHEN type = 'receita' THEN amount ELSE 0 END), 0)::numeric::float8 as total_receitas,
+        COALESCE(SUM(CASE WHEN type = 'despesa' THEN amount ELSE 0 END), 0)::numeric::float8 as total_despesas
+      FROM transactions
+      WHERE user_id = $1
+    `;
+    
+    const result = await pool.query(sql, [userId]);
+    const row = result.rows[0];
+    
+    return {
+      total_receitas: parseFloat(row.total_receitas) || 0,
+      total_despesas: parseFloat(row.total_despesas) || 0,
+      saldo_total: (parseFloat(row.total_receitas) || 0) - (parseFloat(row.total_despesas) || 0)
+    };
+  }
 }
 
 module.exports = Transaction;

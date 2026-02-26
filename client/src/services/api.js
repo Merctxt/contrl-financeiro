@@ -108,7 +108,27 @@ const api = {
     const response = await fetch(`${API_URL}/transactions/breakdown?${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const data = await response.json();
+    
+    setCache(cacheKey, data, TTL.MEDIUM);
+    return data;
+  },
+
+  getLifetimeStats: async (token) => {
+    const cacheKey = 'lifetime_stats';
+    const cached = getCache(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
+    const response = await fetch(`${API_URL}/transactions/lifetime-stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    
+    setCache(cacheKey, data, TTL.LONG);
+    return data;
   },
 
   // Categorias
