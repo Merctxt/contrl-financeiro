@@ -1,4 +1,4 @@
-package com.example.organiza_ai_app;
+package com.giovannidev.organiza_ai_app;
 
 import android.os.Bundle;
 import android.webkit.WebView;
