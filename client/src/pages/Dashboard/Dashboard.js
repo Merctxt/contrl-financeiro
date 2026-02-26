@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
+import NotificationPanel from '../../components/NotificationPanel/NotificationPanel';
 import { FiTrendingUp, FiTrendingDown, FiDollarSign, FiActivity } from 'react-icons/fi';
 import './Dashboard.css';
 
@@ -219,6 +220,7 @@ const Dashboard = () => {
             >
               Este ano
             </button>
+            <NotificationPanel />
           </div>
         </div>
 

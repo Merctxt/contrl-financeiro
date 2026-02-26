@@ -5,6 +5,12 @@
   --secondary: #10b981;
   --danger: #ef4444;
   --warning: #f59e0b;
+  --primary-color: #6366f1;
+  --success-color: #22c55e;
+  --danger-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+  --border-color: #e5e7eb;
   --bg-primary: #ffffff;
   --bg-secondary: #f9fafb;
   --bg-tertiary: #f3f4f6;
@@ -24,6 +30,12 @@
   --secondary: #34d399;
   --danger: #f87171;
   --warning: #fbbf24;
+  --primary-color: #818cf8;
+  --success-color: #22c55e;
+  --danger-color: #f87171;
+  --warning-color: #fbbf24;
+  --info-color: #60a5fa;
+  --border-color: #374151;
   --bg-primary: #1f2937;
   --bg-secondary: #111827;
   --bg-tertiary: #374151;
