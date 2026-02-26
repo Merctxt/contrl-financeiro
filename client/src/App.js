@@ -11,6 +11,7 @@ import Categories from './pages/Categories/Categories';
 import Goals from './pages/goals/goals';
 import Reports from './pages/Reports/Reports';
 import Settings from './pages/Settings/Settings';
+import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy';
 
 const PrivateRoute = ({ children }) => {
   const { token, loading } = useAuth();
@@ -83,6 +84,7 @@ function App() {
                 <Settings />
               </PrivateRoute>
             } />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>

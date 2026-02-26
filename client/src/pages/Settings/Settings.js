@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload, FiMonitor, FiLogOut, FiMessageSquare, FiEdit } from 'react-icons/fi';
+import { FiUser, FiLock, FiSun, FiMoon, FiAlertTriangle, FiSmartphone, FiDownload, FiMonitor, FiLogOut, FiMessageSquare, FiEdit, FiShield } from 'react-icons/fi';
 import packageJson from '../../../package.json';
 import './Settings.css';
 
@@ -455,6 +456,13 @@ const Settings = () => {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="settings-footer">
+          <Link to="/privacy-policy" className="privacy-link">
+            <FiShield /> Política de Privacidade
+          </Link>
+          <span className="version-info">Versão {packageJson.version}</span>
         </div>
       </div>
     </Layout>
