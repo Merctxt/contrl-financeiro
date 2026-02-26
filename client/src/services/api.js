@@ -1,3 +1,5 @@
+import { getCache, setCache, clearCachePattern, TTL } from '../utils/cache';
+
 // Em produção usa URL relativa, em dev usa localhost:5000
 const API_URL = process.env.NODE_ENV === 'production' 
   ? '/api' 
@@ -72,7 +74,14 @@ const api = {
       },
       body: JSON.stringify(data)
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar caches relacionados
+    clearCachePattern('summary_');
+    clearCachePattern('breakdown_');
+    clearCachePattern('lifetime_stats');
+    
+    return result;
   },
 
   updateTransaction: async (token, id, data) => {
@@ -84,7 +93,14 @@ const api = {
       },
       body: JSON.stringify(data)
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar caches relacionados
+    clearCachePattern('summary_');
+    clearCachePattern('breakdown_');
+    clearCachePattern('lifetime_stats');
+    
+    return result;
   },
 
   deleteTransaction: async (token, id) => {
@@ -92,18 +108,42 @@ const api = {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar caches relacionados
+    clearCachePattern('summary_');
+    clearCachePattern('breakdown_');
+    clearCachePattern('lifetime_stats');
+    
+    return result;
   },
 
   getSummary: async (token, startDate, endDate) => {
+    const cacheKey = `summary_${startDate}_${endDate}`;
+    const cached = getCache(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
     const params = new URLSearchParams({ startDate, endDate });
     const response = await fetch(`${API_URL}/transactions/summary?${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const data = await response.json();
+    
+    setCache(cacheKey, data, TTL.MEDIUM);
+    return data;
   },
 
   getCategoryBreakdown: async (token, type, startDate, endDate) => {
+    const cacheKey = `breakdown_${type}_${startDate}_${endDate}`;
+    const cached = getCache(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
     const params = new URLSearchParams({ type, startDate, endDate });
     const response = await fetch(`${API_URL}/transactions/breakdown?${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -133,11 +173,21 @@ const api = {
 
   // Categorias
   getCategories: async (token, type = null) => {
+    const cacheKey = type ? `categories_${type}` : 'categories_all';
+    const cached = getCache(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
     const params = type ? `?type=${type}` : '';
     const response = await fetch(`${API_URL}/categories${params}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const data = await response.json();
+    
+    setCache(cacheKey, data, TTL.LONG);
+    return data;
   },
 
   createCategory: async (token, data) => {
@@ -149,7 +199,13 @@ const api = {
       },
       body: JSON.stringify(data)
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar cache de categorias
+    clearCachePattern('categories_');
+    clearCachePattern('breakdown_');
+    
+    return result;
   },
 
   createDefaultCategories: async (token) => {
@@ -157,7 +213,13 @@ const api = {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar cache de categorias
+    clearCachePattern('categories_');
+    clearCachePattern('breakdown_');
+    
+    return result;
   },
 
   updateCategory: async (token, id, data) => {
@@ -169,7 +231,13 @@ const api = {
       },
       body: JSON.stringify(data)
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar cache de categorias
+    clearCachePattern('categories_');
+    clearCachePattern('breakdown_');
+    
+    return result;
   },
 
   deleteCategory: async (token, id) => {
@@ -177,7 +245,13 @@ const api = {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-    return response.json();
+    const result = await response.json();
+    
+    // Limpar cache de categorias
+    clearCachePattern('categories_');
+    clearCachePattern('breakdown_');
+    
+    return result;
   },
 
   // Configurações do Usuário
