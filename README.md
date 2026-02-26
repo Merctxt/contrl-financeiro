@@ -9,17 +9,6 @@ Organiza Aí is a full-stack personal finance management application designed to
 
 > **Live Demo:** [financeiro.giovannidev.com](https://financeiro.giovannidev.com/)
 
-## Features
-
-*   **Secure Authentication:** User registration, login, and secure password reset via email (using Mailgun).
-*   **Interactive Dashboard:** At-a-glance summary of income, expenses, and balance with data visualization for custom time periods.
-*   **Transaction Management:** Full CRUD (Create, Read, Update, Delete) functionality for all your financial transactions.
-*   **Categorization:** Organize transactions with customizable categories, complete with icons and colors. Includes an option to generate default categories.
-*   **In-depth Reporting:** Generate detailed reports with charts showing monthly financial evolution, spending breakdowns by category, and annual summaries.
-*   **Data Export:** Export transaction data to CSV for external analysis in spreadsheets.
-*   **User Settings:** Update your profile, change your password, and manage your account, including account deletion.
-*   **Light & Dark Mode:** Switch between themes for your visual comfort.
-*   **Responsive Design:** Fully usable on both desktop and mobile devices.
 
 ## Tech Stack
 
