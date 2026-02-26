@@ -388,7 +388,7 @@ const Settings = () => {
               Tem alguma sugestão ou encontrou um bug? Nos informe para que possamos melhorar!
             </p>
             <a 
-              href="https://github.com/Merctxt/contrl-financeiro/issues" 
+              href="https://forms.gle/ThHr1HcfRW1tBF7s7" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn btn-primary"

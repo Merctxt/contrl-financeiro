@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "v260225-b20",
+  "version": "v260226-b21",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
