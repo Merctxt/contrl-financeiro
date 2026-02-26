@@ -9,6 +9,9 @@ const Categories = () => {
   const { token } = useAuth();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [creatingDefaults, setCreatingDefaults] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({
@@ -42,6 +45,7 @@ const Categories = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editingCategory) {
         await api.updateCategory(token, editingCategory.id, formData);
@@ -54,6 +58,8 @@ const Categories = () => {
       loadCategories();
     } catch (error) {
       console.error('Erro ao salvar categoria:', error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -70,21 +76,27 @@ const Categories = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir esta categoria?')) {
+      setDeletingId(id);
       try {
         await api.deleteCategory(token, id);
         loadCategories();
       } catch (error) {
         console.error('Erro ao excluir categoria:', error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
 
   const handleCreateDefaults = async () => {
+    setCreatingDefaults(true);
     try {
       await api.createDefaultCategories(token);
       loadCategories();
     } catch (error) {
       console.error('Erro ao criar categorias padrão:', error);
+    } finally {
+      setCreatingDefaults(false);
     }
   };
 
@@ -112,8 +124,16 @@ const Categories = () => {
               <button 
                 className="btn btn-secondary"
                 onClick={handleCreateDefaults}
+                disabled={creatingDefaults}
               >
-                Criar Categorias Padrão
+                {creatingDefaults ? (
+                  <>
+                    <span className="btn-spinner"></span>
+                    Criando...
+                  </>
+                ) : (
+                  'Criar Categorias Padrão'
+                )}
               </button>
             )}
             <button 
@@ -191,11 +211,19 @@ const Categories = () => {
                     setShowForm(false);
                     setEditingCategory(null);
                   }}
+                  disabled={saving}
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  {editingCategory ? 'Atualizar' : 'Criar'}
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? (
+                    <>
+                      <span className="btn-spinner"></span>
+                      {editingCategory ? 'Atualizando...' : 'Criando...'}
+                    </>
+                  ) : (
+                    editingCategory ? 'Atualizar' : 'Criar'
+                  )}
                 </button>
               </div>
             </form>
@@ -225,6 +253,7 @@ const Categories = () => {
                         className="btn-icon edit"
                         onClick={() => handleEdit(cat)}
                         title="Editar"
+                        disabled={deletingId === cat.id}
                       >
                         <FiEdit2 />
                       </button>
@@ -232,8 +261,13 @@ const Categories = () => {
                         className="btn-icon delete"
                         onClick={() => handleDelete(cat.id)}
                         title="Excluir"
+                        disabled={deletingId === cat.id}
                       >
-                        <FiTrash2 />
+                        {deletingId === cat.id ? (
+                          <span className="btn-spinner small"></span>
+                        ) : (
+                          <FiTrash2 />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -266,6 +300,7 @@ const Categories = () => {
                         className="btn-icon edit"
                         onClick={() => handleEdit(cat)}
                         title="Editar"
+                        disabled={deletingId === cat.id}
                       >
                         <FiEdit2 />
                       </button>
@@ -273,8 +308,13 @@ const Categories = () => {
                         className="btn-icon delete"
                         onClick={() => handleDelete(cat.id)}
                         title="Excluir"
+                        disabled={deletingId === cat.id}
                       >
-                        <FiTrash2 />
+                        {deletingId === cat.id ? (
+                          <span className="btn-spinner small"></span>
+                        ) : (
+                          <FiTrash2 />
+                        )}
                       </button>
                     </div>
                   </div>

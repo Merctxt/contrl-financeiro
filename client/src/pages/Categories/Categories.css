@@ -150,6 +150,11 @@
   gap: 8px;
 }
 
+.category-actions .btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .empty-list {
   color: var(--text-tertiary);
   text-align: center;

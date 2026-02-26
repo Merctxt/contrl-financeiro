@@ -170,11 +170,17 @@
   transform: scale(1.1);
 }
 
-.btn-icon.edit:hover {
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-icon.edit:hover:not(:disabled) {
   background: var(--primary);
 }
 
-.btn-icon.delete:hover {
+.btn-icon.delete:hover:not(:disabled) {
   background: var(--danger);
 }
 

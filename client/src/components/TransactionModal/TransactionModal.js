@@ -3,6 +3,7 @@ import { FiX, FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
 import './TransactionModal.css';
 
 const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     description: '',
     amount: '',
@@ -32,13 +33,18 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      amount: parseFloat(formData.amount),
-      category_id: formData.category_id ? parseInt(formData.category_id) : null
-    });
+    setLoading(true);
+    try {
+      await onSave({
+        ...formData,
+        amount: parseFloat(formData.amount),
+        category_id: formData.category_id ? parseInt(formData.category_id) : null
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredCategories = categories.filter(cat => cat.type === formData.type);
@@ -167,11 +173,18 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
           </div>
 
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
               Cancelar
             </button>
-            <button type="submit" className="btn btn-primary">
-              {transaction ? 'Atualizar' : 'Adicionar'}
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="btn-spinner"></span>
+                  {transaction ? 'Atualizando...' : 'Adicionando...'}
+                </>
+              ) : (
+                transaction ? 'Atualizar' : 'Adicionar'
+              )}
             </button>
           </div>
         </form>

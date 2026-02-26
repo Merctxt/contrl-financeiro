@@ -99,7 +99,18 @@
   border-color: var(--primary);
 }
 
-.goal-actions button:last-child:hover {
+.goal-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.goal-actions button:hover:disabled {
+  background: var(--bg-tertiary);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.goal-actions button:last-child:hover:not(:disabled) {
   background: var(--danger);
   border-color: var(--danger);
 }

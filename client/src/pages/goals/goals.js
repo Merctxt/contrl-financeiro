@@ -9,6 +9,10 @@ const Goals = () => {
   const { token } = useAuth();
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [completingId, setCompletingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [filter, setFilter] = useState('active');
@@ -70,6 +74,7 @@ const Goals = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (editingGoal) {
         await api.updateGoal(token, editingGoal.id, formData);
@@ -81,6 +86,8 @@ const Goals = () => {
     } catch (error) {
       console.error('Erro ao salvar meta:', error);
       alert('Erro ao salvar meta');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -94,12 +101,15 @@ const Goals = () => {
       return;
     }
 
+    setUpdatingId(goalId);
     try {
       await api.updateGoalAmount(token, goalId, amount);
       loadGoals();
     } catch (error) {
       console.error('Erro ao atualizar valor:', error);
       alert('Erro ao atualizar valor');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -108,12 +118,15 @@ const Goals = () => {
       return;
     }
 
+    setCompletingId(goalId);
     try {
       await api.completeGoal(token, goalId);
       loadGoals();
     } catch (error) {
       console.error('Erro ao concluir meta:', error);
       alert('Erro ao concluir meta');
+    } finally {
+      setCompletingId(null);
     }
   };
 
@@ -122,12 +135,15 @@ const Goals = () => {
       return;
     }
 
+    setDeletingId(goalId);
     try {
       await api.deleteGoal(token, goalId);
       loadGoals();
     } catch (error) {
       console.error('Erro ao excluir meta:', error);
       alert('Erro ao excluir meta');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -205,16 +221,36 @@ const Goals = () => {
                   <div className="goal-actions">
                     {goal.status === 'active' && (
                       <>
-                        <button onClick={() => handleUpdateAmount(goal.id, goal.current_amount)} title="Atualizar valor">
-                          <FiDollarSign />
+                        <button 
+                          onClick={() => handleUpdateAmount(goal.id, goal.current_amount)} 
+                          title="Atualizar valor"
+                          disabled={updatingId === goal.id || deletingId === goal.id}
+                        >
+                          {updatingId === goal.id ? (
+                            <span className="btn-spinner small"></span>
+                          ) : (
+                            <FiDollarSign />
+                          )}
                         </button>
-                        <button onClick={() => handleOpenModal(goal)} title="Editar">
+                        <button 
+                          onClick={() => handleOpenModal(goal)} 
+                          title="Editar"
+                          disabled={updatingId === goal.id || deletingId === goal.id}
+                        >
                           <FiEdit2 />
                         </button>
                       </>
                     )}
-                    <button onClick={() => handleDelete(goal.id)} title="Excluir">
-                      <FiTrash2 />
+                    <button 
+                      onClick={() => handleDelete(goal.id)} 
+                      title="Excluir"
+                      disabled={deletingId === goal.id || updatingId === goal.id}
+                    >
+                      {deletingId === goal.id ? (
+                        <span className="btn-spinner small"></span>
+                      ) : (
+                        <FiTrash2 />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -277,8 +313,18 @@ const Goals = () => {
                   <button 
                     className="btn btn-success btn-complete"
                     onClick={() => handleComplete(goal.id)}
+                    disabled={completingId === goal.id}
                   >
-                    <FiCheck /> Marcar como Concluída
+                    {completingId === goal.id ? (
+                      <>
+                        <span className="btn-spinner"></span>
+                        Concluindo...
+                      </>
+                    ) : (
+                      <>
+                        <FiCheck /> Marcar como Concluída
+                      </>
+                    )}
                   </button>
                 )}
               </div>
@@ -368,11 +414,18 @@ const Goals = () => {
                 </div>
 
                 <div className="modal-actions">
-                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal} disabled={saving}>
                     Cancelar
                   </button>
-                  <button type="submit" className="btn btn-primary">
-                    {editingGoal ? 'Atualizar' : 'Criar Meta'}
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? (
+                      <>
+                        <span className="btn-spinner"></span>
+                        {editingGoal ? 'Atualizando...' : 'Criando...'}
+                      </>
+                    ) : (
+                      editingGoal ? 'Atualizar' : 'Criar Meta'
+                    )}
                   </button>
                 </div>
               </form>

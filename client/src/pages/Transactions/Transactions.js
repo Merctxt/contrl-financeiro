@@ -11,6 +11,7 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [filters, setFilters] = useState({
@@ -91,11 +92,14 @@ const Transactions = () => {
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir esta transação?')) {
+      setDeletingId(id);
       try {
         await api.deleteTransaction(token, id);
         loadData();
       } catch (error) {
         console.error('Erro ao excluir transação:', error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -266,6 +270,7 @@ const Transactions = () => {
                             className="btn-icon edit"
                             onClick={() => handleEdit(transaction)}
                             title="Editar"
+                            disabled={deletingId === transaction.id}
                           >
                             <FiEdit2 />
                           </button>
@@ -273,8 +278,13 @@ const Transactions = () => {
                             className="btn-icon delete"
                             onClick={() => handleDelete(transaction.id)}
                             title="Excluir"
+                            disabled={deletingId === transaction.id}
                           >
-                            <FiTrash2 />
+                            {deletingId === transaction.id ? (
+                              <span className="btn-spinner small"></span>
+                            ) : (
+                              <FiTrash2 />
+                            )}
                           </button>
                         </div>
                       </td>
