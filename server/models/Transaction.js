@@ -175,6 +175,34 @@ class Transaction {
     return rows;
   }
 
+  static async getPaymentMethodBreakdown(userId, startDate, endDate) {
+    const sql = `  
+      SELECT 
+        COALESCE(payment_method, 'other') as payment_method,
+        COUNT(*) as count,
+        COALESCE(SUM(amount), 0)::numeric::float8 as total
+      FROM transactions
+      WHERE user_id = $1 AND date BETWEEN $2 AND $3 AND payment_method IS NOT NULL
+      GROUP BY payment_method
+      ORDER BY total DESC
+    `;
+    
+    const result = await pool.query(sql, [userId, startDate, endDate]);
+    
+    // Calcular total geral para calcular percentuais
+    const totalGeral = result.rows.reduce((sum, row) => sum + (parseFloat(row.total) || 0), 0);
+    
+    // Garantir que total seja um número e adicionar percentual
+    const rows = result.rows.map(row => ({
+      ...row,
+      total: parseFloat(row.total) || 0,
+      count: parseInt(row.count) || 0,
+      percentage: totalGeral > 0 ? ((parseFloat(row.total) || 0) / totalGeral * 100).toFixed(2) : 0
+    }));
+    
+    return rows;
+  }
+
   static async getLifetimeStats(userId) {
     const sql = `
       SELECT 

@@ -132,6 +132,23 @@ class TransactionController {
     }
   }
 
+  static async getPaymentMethodBreakdown(req, res) {
+    try {
+      const userId = req.user.id;
+      const { startDate, endDate } = req.query;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'Período é obrigatório' });
+      }
+
+      const breakdown = await Transaction.getPaymentMethodBreakdown(userId, startDate, endDate);
+      res.json({ breakdown });
+    } catch (error) {
+      console.error('Erro ao buscar métodos de pagamento:', error);
+      res.status(500).json({ error: 'Erro ao buscar métodos de pagamento' });
+    }
+  }
+
   static async getLifetimeStats(req, res) {
     try {
       const userId = req.user.id;

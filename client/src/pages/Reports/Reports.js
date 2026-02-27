@@ -17,6 +17,7 @@ const Reports = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [monthlyData, setMonthlyData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
+  const [paymentMethodData, setPaymentMethodData] = useState([]);
   const [summary, setSummary] = useState({ receita: 0, despesa: 0, saldo: 0 });
   const [lifetimeStats, setLifetimeStats] = useState({ total_receitas: 0, total_despesas: 0, saldo_total: 0 });
   
@@ -51,9 +52,10 @@ const Reports = () => {
       const startDate = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-01`;
       const endDate = new Date(selectedYear, selectedMonth, 0).toISOString().split('T')[0];
       
-      const [summaryData, breakdownData, lifetimeData] = await Promise.all([
+      const [summaryData, breakdownData, paymentMethodsData, lifetimeData] = await Promise.all([
         api.getSummary(token, startDate, endDate),
         api.getCategoryBreakdown(token, 'despesa', startDate, endDate),
+        api.getPaymentMethodBreakdown(token, startDate, endDate),
         api.getLifetimeStats(token)
       ]);
 
@@ -63,6 +65,10 @@ const Reports = () => {
 
       if (breakdownData.breakdown) {
         setCategoryData(breakdownData.breakdown);
+      }
+
+      if (paymentMethodsData.breakdown) {
+        setPaymentMethodData(paymentMethodsData.breakdown);
       }
 
       if (lifetimeData.stats) {
@@ -120,6 +126,19 @@ const Reports = () => {
     if (!dateString) return '';
     const [year, month, day] = dateString.split('T')[0].split('-');
     return `${day}/${month}/${year}`;
+  };
+
+  const formatPaymentMethod = (method) => {
+    const methods = {
+      'credit_card': 'Cartão de Crédito',
+      'debit_card': 'Cartão de Débito',
+      'cash': 'Dinheiro',
+      'pix': 'PIX',
+      'bank_transfer': 'Transferência Bancária',
+      'bank_slip': 'Boleto',
+      'other': 'Outro'
+    };
+    return methods[method] || method || 'Não especificado';
   };
 
   const exportToCSV = async () => {
@@ -426,6 +445,39 @@ const Reports = () => {
             ) : (
               <div className="empty-chart">
                 <p>Nenhuma despesa registrada neste período</p>
+              </div>
+            )}
+          </div>
+
+          <div className="card chart-card">
+            <h3>Métodos de Pagamento - {months[selectedMonth - 1]}</h3>
+            {paymentMethodData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={paymentMethodData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ payment_method, percent }) => `${formatPaymentMethod(payment_method)} (${(percent * 100).toFixed(0)}%)`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="total"
+                    nameKey="payment_method"
+                  >
+                    {paymentMethodData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(value)}
+                    labelFormatter={(label) => formatPaymentMethod(label)}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="empty-chart">
+                <p>Nenhuma transação registrada neste período</p>
               </div>
             )}
           </div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
-import { FiPlus, FiEdit2, FiTrash2, FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiTrendingUp, FiTrendingDown, FiArrowLeft } from 'react-icons/fi';
 import './Categories.css';
+import { Link } from 'react-router-dom';
 
 const Categories = () => {
   const { token } = useAuth();
@@ -114,6 +115,12 @@ const Categories = () => {
   return (
     <Layout>
       <div className="categories-page fade-in">
+        <div>
+            <Link to={token ? "/transactions" : "/login"} className="back-link">
+              <FiArrowLeft className="nav-icon" />
+              <span>Voltar</span>
+            </Link>
+          </div>
         <div className="page-header">
           <div>
             <h1>Categorias</h1>
