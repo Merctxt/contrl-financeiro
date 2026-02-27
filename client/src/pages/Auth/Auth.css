@@ -462,3 +462,8 @@
 .password-requirements li.valid {
   color: var(--success);
 }
+
+.register-footer {
+  margin-top: 24px;
+  text-align: center;
+}

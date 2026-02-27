@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import './Auth.css';
+import { FiShield } from 'react-icons/fi';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -118,6 +119,12 @@ const Register = () => {
             {loading ? 'Criando conta...' : 'Criar Conta'}
           </button>
         </form>
+
+        <div className="register-footer">
+          <Link to="/privacy-policy" className="privacy-link">
+            <FiShield /> Política de Privacidade
+          </Link>
+        </div>
 
         <div className="auth-footer">
           <p>

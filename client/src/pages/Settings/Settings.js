@@ -398,9 +398,9 @@ const Settings = () => {
             </a>
           </div>
 
-          {/* Informações do sistema */}
+          {/* Informações do dispositivo */}
           <div className="card settings-card">
-            <h3><FiMonitor /> Informações do Sistema</h3>
+            <h3><FiMonitor /> Informações do Dispositivo</h3>
             <p className="system-info">
               <strong>Versão do App:</strong> {packageJson.version}<br />
               <strong>Status:</strong> <span style={{ color: 'green' }}>Online</span><br />

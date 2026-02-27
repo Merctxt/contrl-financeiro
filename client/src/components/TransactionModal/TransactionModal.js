@@ -76,7 +76,7 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Descrição *</label>
+            <label htmlFor="description">Descrição <span style={{ color: 'red' }}>*</span></label>
             <input
               type="text"
               id="description"
@@ -91,7 +91,7 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="amount">Valor *</label>
+              <label htmlFor="amount">Valor <span style={{ color: 'red' }}>*</span></label>
               <input
                 type="number"
                 id="amount"
@@ -107,7 +107,7 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="date">Data *</label>
+              <label htmlFor="date">Data <span style={{ color: 'red' }}>*</span></label>
               <input
                 type="date"
                 id="date"
@@ -149,27 +149,14 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
                 onChange={handleChange}
               >
                 <option value="">Selecione...</option>
-                <option value="dinheiro">💵 Dinheiro</option>
-                <option value="cartao_credito">💳 Cartão de Crédito</option>
-                <option value="cartao_debito">💳 Cartão de Débito</option>
-                <option value="pix">📱 PIX</option>
-                <option value="transferencia">🏦 Transferência</option>
-                <option value="boleto">📄 Boleto</option>
+                <option value="dinheiro">Dinheiro</option>
+                <option value="cartao_credito">Cartão de Crédito</option>
+                <option value="cartao_debito">Cartão de Débito</option>
+                <option value="pix">PIX</option>
+                <option value="transferencia">Transferência</option>
+                <option value="boleto">Boleto</option>
               </select>
             </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="notes">Observações</label>
-            <textarea
-              id="notes"
-              name="notes"
-              className="form-control"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Adicione uma nota (opcional)"
-              rows="3"
-            />
           </div>
 
           <div className="modal-footer">

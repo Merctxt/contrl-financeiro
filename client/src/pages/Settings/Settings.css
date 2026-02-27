@@ -340,6 +340,10 @@
   gap: 16px;
 }
 
+a {
+  text-decoration: none;
+}
+
 .privacy-link {
   display: inline-flex;
   align-items: center;

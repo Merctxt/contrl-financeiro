@@ -18,19 +18,19 @@ const PrivacyPolicy = () => {
           <FiShield className="privacy-icon" />
           <h1>Política de Privacidade</h1>
         </div>
-        <p className="last-updated">Última atualização: 26 de fevereiro de 2026</p>
+        <p className="last-updated">Última atualização: 27 de fevereiro de 2026</p>
       </div>
 
       <div className="privacy-content card">
         <section>
           <h2>1. Introdução</h2>
           <p>
-            Bem-vindo ao Ctrl Financeiro. Esta Política de Privacidade descreve como coletamos, 
+            Bem-vindo ao Organiza Aí. Esta Política de Privacidade descreve como coletamos, 
             usamos, armazenamos e protegemos suas informações pessoais quando você utiliza 
             nossa aplicação de controle financeiro pessoal.
           </p>
           <p>
-            Ao utilizar o Ctrl Financeiro, você concorda com a coleta e uso de informações 
+            Ao utilizar o Organiza Aí, você concorda com a coleta e uso de informações 
             de acordo com esta política. Comprometemo-nos a proteger sua privacidade e 
             manter seus dados financeiros seguros.
           </p>
@@ -86,21 +86,11 @@ const PrivacyPolicy = () => {
             Utilizamos banco de dados PostgreSQL com criptografia em trânsito e em repouso.
           </p>
 
-          <h3>4.2 Medidas de Segurança</h3>
-          <ul>
-            <li>Senhas criptografadas com algoritmo bcrypt</li>
-            <li>Tokens de sessão com hash SHA-256</li>
-            <li>Conexões HTTPS/TLS para todas as comunicações</li>
-            <li>Autenticação JWT (JSON Web Tokens)</li>
-            <li>Monitoramento de sessões ativas</li>
-            <li>Cache local apenas para dados não sensíveis</li>
-          </ul>
-
-          <h3>4.3 Retenção de Dados</h3>
+          <h3>4.2 Retenção de Dados</h3>
           <p>
             Mantemos suas informações enquanto sua conta estiver ativa. Quando você 
             excluir sua conta, todos os seus dados pessoais e financeiros serão 
-            permanentemente removidos de nossos servidores em até 30 dias.
+            permanentemente removidos de nossos servidores em até 7 dias.
           </p>
         </section>
 
@@ -132,23 +122,7 @@ const PrivacyPolicy = () => {
         </section>
 
         <section>
-          <h2>7. Cookies e Armazenamento Local</h2>
-          <p>
-            Utilizamos localStorage do navegador para armazenar:
-          </p>
-          <ul>
-            <li>Token de autenticação (JWT)</li>
-            <li>Preferências de tema (claro/escuro)</li>
-            <li>Cache temporário de dados não sensíveis (com TTL de 1-5 minutos)</li>
-          </ul>
-          <p>
-            Você pode limpar esses dados a qualquer momento através das configurações 
-            do seu navegador. Isso resultará em logout automático.
-          </p>
-        </section>
-
-        <section>
-          <h2>8. Privacidade de Menores</h2>
+          <h2>7. Privacidade de Menores</h2>
           <p>
             Nosso serviço não é direcionado a menores de 18 anos. Não coletamos 
             intencionalmente informações de crianças. Se você acredita que coletamos 
@@ -157,24 +131,7 @@ const PrivacyPolicy = () => {
         </section>
 
         <section>
-          <h2>9. Alterações nesta Política</h2>
-          <p>
-            Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos 
-            sobre mudanças significativas através de:
-          </p>
-          <ul>
-            <li>E-mail para o endereço cadastrado</li>
-            <li>Aviso destacado na aplicação</li>
-            <li>Atualização da data "Última atualização" no topo desta página</li>
-          </ul>
-          <p>
-            Recomendamos revisar esta política periodicamente. O uso continuado do 
-            serviço após alterações constitui aceitação das novas condições.
-          </p>
-        </section>
-
-        <section>
-          <h2>10. Lei Geral de Proteção de Dados (LGPD)</h2>
+          <h2>8. Lei Geral de Proteção de Dados (LGPD)</h2>
           <p>
             Estamos em conformidade com a Lei Geral de Proteção de Dados Pessoais (Lei 
             nº 13.709/2018). Você tem todos os direitos previstos pela LGPD, incluindo:
@@ -190,7 +147,7 @@ const PrivacyPolicy = () => {
         </section>
 
         <section>
-          <h2>11. Contato</h2>
+          <h2>9. Contato</h2>
           <p>
             Para exercer seus direitos, tirar dúvidas ou fazer solicitações relacionadas 
             a esta Política de Privacidade, entre em contato conosco:
@@ -205,9 +162,6 @@ const PrivacyPolicy = () => {
           <p>
             Esta política foi elaborada para garantir transparência sobre como tratamos 
             seus dados. Seu controle financeiro merece segurança e privacidade total.
-          </p>
-          <p className="footer-tagline">
-            <FiShield /> Ctrl Financeiro - Seu dinheiro, suas regras, sua privacidade.
           </p>
         </div>
       </div>
