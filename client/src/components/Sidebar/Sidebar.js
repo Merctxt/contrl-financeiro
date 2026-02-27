@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+
 import { 
   FiHome, 
   FiDollarSign, 
-  FiTag, 
+  FiCalendar,
   FiBarChart2, 
   FiSettings, 
   FiSun, 
@@ -15,7 +16,8 @@ import {
   FiCheckCircle,
   FiX,
   FiSmartphone,
-  FiDownload
+  FiDownload,
+  FiMenu
 } from 'react-icons/fi';
 import './Sidebar.css';
 
@@ -24,6 +26,10 @@ const Sidebar = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === 'true';
+  });
 
   useEffect(() => {
     // Verificar se o usuário já fechou o popup
@@ -43,13 +49,22 @@ const Sidebar = () => {
     navigate('/login');
   };
 
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebarCollapsed', newState.toString());
+  };
+
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <FiCheckCircle className="logo-icon" />
           <span className="logo-text">Organiza Aí</span>
         </div>
+        <button className="sidebar-toggle" onClick={toggleSidebar} title={isCollapsed ? "Expandir" : "Recolher"}>
+          <FiMenu />
+        </button>
       </div>
 
       <nav className="sidebar-nav">
@@ -63,9 +78,9 @@ const Sidebar = () => {
           <span>Transações</span>
         </NavLink>
 
-        <NavLink to="/categories" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <FiTag className="nav-icon" />
-          <span>Categorias</span>
+        <NavLink to="/budget" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <FiCalendar className="nav-icon" />
+          <span>Planejamento</span>
         </NavLink>
 
         <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>

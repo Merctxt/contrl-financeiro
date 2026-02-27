@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Sidebar from '../Sidebar/Sidebar';
@@ -8,6 +8,21 @@ import './Layout.css';
 const Layout = ({ children, showMobileLogout = false }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('sidebarCollapsed') === 'true';
+  });
+
+  useEffect(() => {
+    // Listener para mudanças no localStorage (quando a sidebar é colapsada/expandida)
+    const handleStorageChange = () => {
+      setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
+    };
+
+    // Verificar a cada 100ms (alternativa quando o evento storage não funciona na mesma aba)
+    const interval = setInterval(handleStorageChange, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -15,7 +30,7 @@ const Layout = ({ children, showMobileLogout = false }) => {
   };
 
   return (
-    <div className="layout">
+    <div className={`layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <Sidebar />
       {showMobileLogout && (
         <button className="mobile-logout-btn" onClick={handleLogout}>

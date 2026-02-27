@@ -9,6 +9,11 @@
   padding: 24px;
   background: var(--bg-secondary);
   min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.layout.sidebar-collapsed .main-content {
+  margin-left: 80px;
 }
 
 /* Botão de logout mobile - escondido no desktop */
@@ -24,11 +29,15 @@
   }
 
   .main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
     padding: 16px;
     padding-top: 10px;
     padding-bottom: 90px; /* Espaço para o navbar fixo no rodapé */
     min-height: calc(100vh - 70px);
+  }
+
+  .layout.sidebar-collapsed .main-content {
+    margin-left: 0 !important;
   }
 
   /* Mostrar botão de logout no mobile */
