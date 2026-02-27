@@ -3,8 +3,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import Layout from '../../components/Layout/Layout';
 import TransactionModal from '../../components/TransactionModal/TransactionModal';
-import { FiPlus, FiEdit2, FiTrash2, FiFilter, FiX, FiDollarSign } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiFilter, FiX, FiDollarSign, FiTag } from 'react-icons/fi';
 import './Transactions.css';
+import { Link } from 'react-router-dom';
 
 const Transactions = () => {
   const { token } = useAuth();
@@ -140,15 +141,22 @@ const Transactions = () => {
             <h1>Transações</h1>
             <p>Gerencie suas receitas e despesas</p>
           </div>
-          <button 
-            className="btn btn-primary"
-            onClick={() => {
-              setEditingTransaction(null);
-              setShowModal(true);
-            }}
-          >
-            <FiPlus /> Nova Transação
-          </button>
+
+          <div className="page-header-actions">
+            <Link to="/categories" className="btn btn-secondary">
+              <FiTag /> Gerenciar Categorias
+            </Link>
+
+            <button 
+              className="btn btn-primary"
+              onClick={() => {
+                setEditingTransaction(null);
+                setShowModal(true);
+              }}
+            >
+              <FiPlus /> Nova Transação
+            </button>
+          </div>
         </div>
 
         <div className="card filters-card">
