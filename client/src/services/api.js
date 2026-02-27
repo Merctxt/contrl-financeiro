@@ -154,6 +154,15 @@ const api = {
     return data;
   },
 
+  getPaymentMethodBreakdown: async (token, startDate, endDate) => {
+    const params = new URLSearchParams({ startDate, endDate });
+    const response = await fetch(`${API_URL}/transactions/payment-methods-breakdown?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    return data;
+  },
+
   getLifetimeStats: async (token) => {
     const cacheKey = 'lifetime_stats';
     const cached = getCache(cacheKey);
