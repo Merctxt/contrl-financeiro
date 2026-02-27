@@ -92,7 +92,8 @@ async function initializeDatabase() {
         limit_amount DECIMAL(10, 2) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+        UNIQUE (user_id, category_id, month, year)
       )
     `);
 
@@ -115,6 +116,21 @@ async function initializeDatabase() {
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_sessions_user_active 
       ON sessions(user_id, is_active)
+    `);
+
+    // Adicionar constraint UNIQUE na tabela budgets se não existir
+    await client.query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint 
+          WHERE conname = 'budgets_user_category_month_year_unique'
+        ) THEN
+          ALTER TABLE budgets 
+          ADD CONSTRAINT budgets_user_category_month_year_unique 
+          UNIQUE (user_id, category_id, month, year);
+        END IF;
+      END $$;
     `);
 
     await client.query('COMMIT');

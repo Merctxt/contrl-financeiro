@@ -398,6 +398,63 @@ const api = {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     return response.json();
+  },
+
+  // Orçamentos Mensais
+  getBudgets: async (token, month, year) => {
+    const params = new URLSearchParams({ month, year });
+    const response = await fetch(`${API_URL}/budgets?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  getAllCategoriesWithBudgets: async (token, month, year) => {
+    const params = new URLSearchParams({ month, year });
+    const response = await fetch(`${API_URL}/budgets/all-categories?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  getTotalBudget: async (token, month, year) => {
+    const params = new URLSearchParams({ month, year });
+    const response = await fetch(`${API_URL}/budgets/total?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
+  },
+
+  createBudget: async (token, data) => {
+    const response = await fetch(`${API_URL}/budgets`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+
+  updateBudget: async (token, id, data) => {
+    const response = await fetch(`${API_URL}/budgets/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+
+  deleteBudget: async (token, id) => {
+    const response = await fetch(`${API_URL}/budgets/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return response.json();
   }
 };
 
