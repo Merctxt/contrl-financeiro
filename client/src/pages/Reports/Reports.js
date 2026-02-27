@@ -384,21 +384,6 @@ const Reports = () => {
         </div>
 
         <div className="report-grid">
-          <div className="card chart-card full-width">
-            <h3>Evolução Mensal - {selectedYear}</h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="month" />
-                <YAxis tickFormatter={(value) => formatCurrency(value).replace('R$', '')} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="receita" name="Receita" fill="#10b981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="despesa" name="Despesa" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
           <div className="card chart-card">
             <h3>Saldo Mensal - {selectedYear}</h3>
             <ResponsiveContainer width="100%" height={300}>
