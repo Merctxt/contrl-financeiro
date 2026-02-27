@@ -25,24 +25,10 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
-
-  useEffect(() => {
-    // Verificar se o usuário já fechou o popup
-    const popupClosed = localStorage.getItem('mobileAppPopupClosed');
-    if (!popupClosed) {
-      setShowPopup(true);
-    }
-  }, []);
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    localStorage.setItem('mobileAppPopupClosed', 'true');
-  };
 
   const handleLogout = () => {
     logout();
@@ -103,30 +89,6 @@ const Sidebar = () => {
           <span>Sair</span>
         </button>
       </nav>
-
-      {showPopup && (
-        <div className='sidebar-popup'>
-          <button className='popup-close' onClick={handleClosePopup} title="Fechar">
-            <FiX />
-          </button>
-          <div className='popup-icon'>
-            <FiSmartphone />
-          </div>
-          <h3>Novidades!</h3>
-          <p>Agora temos um <strong>app Android</strong>!</p>
-          <p className='popup-description'>
-            Gerencie suas finanças direto do seu celular
-          </p>
-          <a 
-            href="https://github.com/Merctxt/contrl-financeiro/releases" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className='popup-button'
-          >
-            <FiDownload /> Baixar App
-          </a>
-        </div>
-      )}
 
       <div className="sidebar-footer">
         <button 
