@@ -1,6 +1,65 @@
 // Sistema de cache usando localStorage com TTL
 
 const CACHE_PREFIX = 'ctrl_financeiro_';
+const CLEANUP_INTERVAL_KEY = 'ctrl_financeiro_last_cleanup';
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
+
+export const cleanExpiredCache = () => {
+  try {
+    const keys = Object.keys(localStorage);
+    let cleanedCount = 0;
+    
+    keys.forEach(key => {
+      if (key.startsWith(CACHE_PREFIX) && key !== CLEANUP_INTERVAL_KEY) {
+        try {
+          const itemStr = localStorage.getItem(key);
+          if (itemStr) {
+            const item = JSON.parse(itemStr);
+            if (Date.now() > item.expiry) {
+              localStorage.removeItem(key);
+              cleanedCount++;
+            }
+          }
+        } catch (e) {
+          // Item corrompido, remover
+          localStorage.removeItem(key);
+          cleanedCount++;
+        }
+      }
+    });
+    
+    return cleanedCount;
+  } catch (error) {
+    console.error('Erro ao limpar cache expirado:', error);
+    return 0;
+  }
+};
+
+const shouldRunCleanup = () => {
+  try {
+    const lastCleanup = localStorage.getItem(CLEANUP_INTERVAL_KEY);
+    if (!lastCleanup) {
+      return true;
+    }
+    return Date.now() - parseInt(lastCleanup, 10) > CLEANUP_INTERVAL_MS;
+  } catch {
+    return true;
+  }
+};
+
+const runPeriodicCleanup = () => {
+  if (shouldRunCleanup()) {
+    cleanExpiredCache();
+    try {
+      localStorage.setItem(CLEANUP_INTERVAL_KEY, Date.now().toString());
+    } catch (e) {
+      // Ignorar erro
+    }
+  }
+};
+
+
+runPeriodicCleanup();
 
 /**
  * Define um item no cache com TTL
@@ -10,6 +69,9 @@ const CACHE_PREFIX = 'ctrl_financeiro_';
  */
 export const setCache = (key, data, ttl = 300000) => {
   try {
+    // Executar limpeza periódica ao salvar
+    runPeriodicCleanup();
+    
     const item = {
       data,
       expiry: Date.now() + ttl,
@@ -17,7 +79,22 @@ export const setCache = (key, data, ttl = 300000) => {
     };
     localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(item));
   } catch (error) {
-    console.error('Erro ao salvar cache:', error);
+    // Se localStorage estiver cheio, limpar itens expirados e tentar novamente
+    if (error.name === 'QuotaExceededError') {
+      cleanExpiredCache();
+      try {
+        const item = {
+          data,
+          expiry: Date.now() + ttl,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_PREFIX + key, JSON.stringify(item));
+      } catch (retryError) {
+        console.error('Erro ao salvar cache após limpeza:', retryError);
+      }
+    } else {
+      console.error('Erro ao salvar cache:', error);
+    }
   }
 };
 

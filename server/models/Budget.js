@@ -17,29 +17,33 @@ class Budget {
   }
 
   static async findByUserAndPeriod(userId, month, year) {
+    // Usar CTE para calcular gastos uma única vez, evitando N subqueries
     const sql = `
+      WITH spent_by_category AS (
+        SELECT 
+          category_id,
+          COALESCE(SUM(amount), 0)::numeric::float8 as total_spent
+        FROM transactions
+        WHERE user_id = $1
+          AND type = 'despesa'
+          AND EXTRACT(MONTH FROM date) = $2
+          AND EXTRACT(YEAR FROM date) = $3
+        GROUP BY category_id
+      )
       SELECT 
         b.*,
         c.name as category_name,
         c.icon as category_icon,
         c.color as category_color,
         c.type as category_type,
-        COALESCE(
-          (SELECT SUM(amount)::numeric::float8
-           FROM transactions t
-           WHERE t.user_id = b.user_id
-           AND t.category_id = b.category_id
-           AND t.type = 'despesa'
-           AND EXTRACT(MONTH FROM t.date) = b.month
-           AND EXTRACT(YEAR FROM t.date) = b.year),
-          0
-        ) as spent_amount,
+        COALESCE(s.total_spent, 0) as spent_amount,
         true as has_budget
       FROM budgets b
       LEFT JOIN categories c ON b.category_id = c.id
+      LEFT JOIN spent_by_category s ON s.category_id = b.category_id
       WHERE b.user_id = $1
-      AND b.month = $2
-      AND b.year = $3
+        AND b.month = $2
+        AND b.year = $3
       ORDER BY c.name
     `;
     
@@ -57,7 +61,19 @@ class Budget {
   }
 
   static async getAllCategoriesWithBudgets(userId, month, year) {
+    // Usar CTE para calcular gastos uma única vez, evitando N subqueries
     const sql = `
+      WITH spent_by_category AS (
+        SELECT 
+          category_id,
+          COALESCE(SUM(amount), 0)::numeric::float8 as total_spent
+        FROM transactions
+        WHERE user_id = $1
+          AND type = 'despesa'
+          AND EXTRACT(MONTH FROM date) = $2
+          AND EXTRACT(YEAR FROM date) = $3
+        GROUP BY category_id
+      )
       SELECT 
         c.id as category_id,
         c.name as category_name,
@@ -66,19 +82,11 @@ class Budget {
         c.type as category_type,
         b.id as budget_id,
         COALESCE(b.limit_amount, 0)::numeric::float8 as limit_amount,
-        COALESCE(
-          (SELECT SUM(amount)::numeric::float8
-           FROM transactions t
-           WHERE t.user_id = $1
-           AND t.category_id = c.id
-           AND t.type = 'despesa'
-           AND EXTRACT(MONTH FROM t.date) = $2
-           AND EXTRACT(YEAR FROM t.date) = $3),
-          0
-        ) as spent_amount,
+        COALESCE(s.total_spent, 0) as spent_amount,
         CASE WHEN b.id IS NOT NULL THEN true ELSE false END as has_budget
       FROM categories c
       LEFT JOIN budgets b ON b.category_id = c.id AND b.user_id = $1 AND b.month = $2 AND b.year = $3
+      LEFT JOIN spent_by_category s ON s.category_id = c.id
       WHERE c.user_id = $1 AND c.type = 'despesa'
       ORDER BY c.name
     `;
