@@ -22,8 +22,8 @@ const NotificationPanel = () => {
   useEffect(() => {
     if (token) {
       loadTriggers();
-      // Atualiza a cada 5 minutos
-      const interval = setInterval(loadTriggers, 5 * 60 * 1000);
+      // Atualiza a cada 10 minutos
+      const interval = setInterval(loadTriggers, 10 * 60 * 1000);
       return () => clearInterval(interval);
     }
   }, [token, readNotifications]);
