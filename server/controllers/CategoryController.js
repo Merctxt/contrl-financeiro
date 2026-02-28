@@ -1,4 +1,5 @@
 const Category = require('../models/Category');
+const validator = require('../utils/validator');
 
 class CategoryController {
   static async create(req, res) {
@@ -6,15 +7,17 @@ class CategoryController {
       const userId = req.user.id;
       const data = req.body;
 
-      if (!data.name || !data.type) {
-        return res.status(400).json({ error: 'Nome e tipo são obrigatórios' });
+      // Validar e sanitizar dados
+      const validation = validator.validateCategory(data, false);
+      
+      if (!validation.valid) {
+        return res.status(400).json({ 
+          error: 'Dados inválidos', 
+          details: validation.errors 
+        });
       }
 
-      if (!['receita', 'despesa'].includes(data.type)) {
-        return res.status(400).json({ error: 'Tipo inválido' });
-      }
-
-      const category = await Category.create(userId, data);
+      const category = await Category.create(userId, validation.data);
       res.status(201).json({ message: 'Categoria criada com sucesso', category });
     } catch (error) {
       console.error('Erro ao criar categoria:', error);
@@ -25,7 +28,15 @@ class CategoryController {
   static async getAll(req, res) {
     try {
       const userId = req.user.id;
-      const type = req.query.type;
+      let type = null;
+      
+      // Validar tipo se fornecido
+      if (req.query.type) {
+        const typeValidation = validator.validateTransactionType(req.query.type);
+        if (typeValidation.valid) {
+          type = typeValidation.value;
+        }
+      }
 
       const categories = await Category.findByUserId(userId, type);
       res.json({ categories });
@@ -39,8 +50,14 @@ class CategoryController {
     try {
       const userId = req.user.id;
       const { id } = req.params;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
 
-      const category = await Category.findById(id, userId);
+      const category = await Category.findById(idValidation.value, userId);
       
       if (!category) {
         return res.status(404).json({ error: 'Categoria não encontrada' });
@@ -58,8 +75,24 @@ class CategoryController {
       const userId = req.user.id;
       const { id } = req.params;
       const data = req.body;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
+      
+      // Validar dados (modo update)
+      const validation = validator.validateCategory(data, true);
+      
+      if (!validation.valid) {
+        return res.status(400).json({ 
+          error: 'Dados inválidos', 
+          details: validation.errors 
+        });
+      }
 
-      const category = await Category.update(id, userId, data);
+      const category = await Category.update(idValidation.value, userId, validation.data);
       
       if (category.updated === 0) {
         return res.status(404).json({ error: 'Categoria não encontrada' });
@@ -76,8 +109,14 @@ class CategoryController {
     try {
       const userId = req.user.id;
       const { id } = req.params;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
 
-      const result = await Category.delete(id, userId);
+      const result = await Category.delete(idValidation.value, userId);
       
       if (result.deleted === 0) {
         return res.status(404).json({ error: 'Categoria não encontrada' });

@@ -1,4 +1,5 @@
 const Transaction = require('../models/Transaction');
+const validator = require('../utils/validator');
 
 class TransactionController {
   static async create(req, res) {
@@ -6,16 +7,17 @@ class TransactionController {
       const userId = req.user.id;
       const data = req.body;
 
-      // Validar dados
-      if (!data.description || !data.amount || !data.type || !data.date) {
-        return res.status(400).json({ error: 'Campos obrigatórios faltando' });
+      // Validar e sanitizar dados
+      const validation = validator.validateTransaction(data, false);
+      
+      if (!validation.valid) {
+        return res.status(400).json({ 
+          error: 'Dados inválidos', 
+          details: validation.errors 
+        });
       }
 
-      if (!['receita', 'despesa'].includes(data.type)) {
-        return res.status(400).json({ error: 'Tipo inválido' });
-      }
-
-      const transaction = await Transaction.create(userId, data);
+      const transaction = await Transaction.create(userId, validation.data);
       res.status(201).json({ message: 'Transação criada com sucesso', transaction });
     } catch (error) {
       console.error('Erro ao criar transação:', error);
@@ -26,13 +28,42 @@ class TransactionController {
   static async getAll(req, res) {
     try {
       const userId = req.user.id;
-      const filters = {
-        type: req.query.type,
-        startDate: req.query.startDate,
-        endDate: req.query.endDate,
-        category_id: req.query.category_id,
-        limit: req.query.limit
-      };
+      
+      // Validar filtros
+      const filters = {};
+      
+      if (req.query.type) {
+        const typeValidation = validator.validateTransactionType(req.query.type);
+        if (typeValidation.valid) {
+          filters.type = typeValidation.value;
+        }
+      }
+      
+      if (req.query.startDate) {
+        const dateValidation = validator.validateDate(req.query.startDate);
+        if (dateValidation.valid) {
+          filters.startDate = dateValidation.value;
+        }
+      }
+      
+      if (req.query.endDate) {
+        const dateValidation = validator.validateDate(req.query.endDate);
+        if (dateValidation.valid) {
+          filters.endDate = dateValidation.value;
+        }
+      }
+      
+      if (req.query.category_id) {
+        const idValidation = validator.validateId(req.query.category_id);
+        if (idValidation.valid) {
+          filters.category_id = idValidation.value;
+        }
+      }
+      
+      if (req.query.limit) {
+        const limitValidation = validator.validateLimit(req.query.limit);
+        filters.limit = limitValidation.value;
+      }
 
       const transactions = await Transaction.findByUserId(userId, filters);
       res.json({ transactions });
@@ -46,8 +77,14 @@ class TransactionController {
     try {
       const userId = req.user.id;
       const { id } = req.params;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
 
-      const transaction = await Transaction.findById(id, userId);
+      const transaction = await Transaction.findById(idValidation.value, userId);
       
       if (!transaction) {
         return res.status(404).json({ error: 'Transação não encontrada' });
@@ -65,8 +102,24 @@ class TransactionController {
       const userId = req.user.id;
       const { id } = req.params;
       const data = req.body;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
+      
+      // Validar dados (modo update - campos opcionais)
+      const validation = validator.validateTransaction(data, true);
+      
+      if (!validation.valid) {
+        return res.status(400).json({ 
+          error: 'Dados inválidos', 
+          details: validation.errors 
+        });
+      }
 
-      const transaction = await Transaction.update(id, userId, data);
+      const transaction = await Transaction.update(idValidation.value, userId, validation.data);
       
       if (transaction.updated === 0) {
         return res.status(404).json({ error: 'Transação não encontrada' });
@@ -83,8 +136,14 @@ class TransactionController {
     try {
       const userId = req.user.id;
       const { id } = req.params;
+      
+      // Validar ID
+      const idValidation = validator.validateId(id);
+      if (!idValidation.valid) {
+        return res.status(400).json({ error: idValidation.error });
+      }
 
-      const result = await Transaction.delete(id, userId);
+      const result = await Transaction.delete(idValidation.value, userId);
       
       if (result.deleted === 0) {
         return res.status(404).json({ error: 'Transação não encontrada' });
@@ -101,12 +160,16 @@ class TransactionController {
     try {
       const userId = req.user.id;
       const { startDate, endDate } = req.query;
-
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: 'Período é obrigatório' });
+      
+      // Validar datas
+      const startValidation = validator.validateDate(startDate);
+      const endValidation = validator.validateDate(endDate);
+      
+      if (!startValidation.valid || !endValidation.valid) {
+        return res.status(400).json({ error: 'Período inválido' });
       }
 
-      const summary = await Transaction.getSummary(userId, startDate, endDate);
+      const summary = await Transaction.getSummary(userId, startValidation.value, endValidation.value);
       res.json({ summary });
     } catch (error) {
       console.error('Erro ao buscar resumo:', error);
@@ -118,13 +181,22 @@ class TransactionController {
     try {
       const userId = req.user.id;
       const { type, startDate, endDate } = req.query;
-
-      if (!type || !startDate || !endDate) {
+      
+      // Validar tipo e datas
+      const typeValidation = validator.validateTransactionType(type);
+      const startValidation = validator.validateDate(startDate);
+      const endValidation = validator.validateDate(endDate);
+      
+      if (!typeValidation.valid || !startValidation.valid || !endValidation.valid) {
         return res.status(400).json({ error: 'Tipo e período são obrigatórios' });
       }
 
-      const breakdown = await Transaction.getCategoryBreakdown(userId, type, startDate, endDate);
-      console.log('Breakdown result:', breakdown); // Debug
+      const breakdown = await Transaction.getCategoryBreakdown(
+        userId, 
+        typeValidation.value, 
+        startValidation.value, 
+        endValidation.value
+      );
       res.json({ breakdown });
     } catch (error) {
       console.error('Erro ao buscar breakdown:', error);
@@ -136,12 +208,20 @@ class TransactionController {
     try {
       const userId = req.user.id;
       const { startDate, endDate } = req.query;
-
-      if (!startDate || !endDate) {
-        return res.status(400).json({ error: 'Período é obrigatório' });
+      
+      // Validar datas
+      const startValidation = validator.validateDate(startDate);
+      const endValidation = validator.validateDate(endDate);
+      
+      if (!startValidation.valid || !endValidation.valid) {
+        return res.status(400).json({ error: 'Período inválido' });
       }
 
-      const breakdown = await Transaction.getPaymentMethodBreakdown(userId, startDate, endDate);
+      const breakdown = await Transaction.getPaymentMethodBreakdown(
+        userId, 
+        startValidation.value, 
+        endValidation.value
+      );
       res.json({ breakdown });
     } catch (error) {
       console.error('Erro ao buscar métodos de pagamento:', error);
