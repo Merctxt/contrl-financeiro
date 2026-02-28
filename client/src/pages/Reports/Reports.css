@@ -360,6 +360,7 @@
   }
 
   .report-grid {
+    grid-template-columns: 1fr;
     gap: 16px;
     margin-bottom: 16px;
   }
@@ -367,6 +368,10 @@
   .chart-card {
     min-height: auto;
     padding: 16px;
+  }
+
+  .chart-card .recharts-responsive-container {
+    max-height: 400px;
   }
 
   .chart-card h3 {

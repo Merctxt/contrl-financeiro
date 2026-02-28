@@ -129,6 +129,8 @@ const Reports = () => {
   };
 
   const formatPaymentMethod = (method) => {
+    if (!method) return 'Não especificado';
+    
     const methods = {
       'credit_card': 'Cartão de Crédito',
       'debit_card': 'Cartão de Débito',
@@ -138,7 +140,16 @@ const Reports = () => {
       'bank_slip': 'Boleto',
       'other': 'Outro'
     };
-    return methods[method] || method || 'Não especificado';
+    
+    // Se existe tradução, usa ela
+    if (methods[method]) return methods[method];
+    
+    // Caso contrário, formata o texto: remove underscore e capitaliza
+    return method
+      .replace(/_/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const exportToCSV = async () => {

@@ -332,25 +332,38 @@ const Budget = () => {
         {showModal && (
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>{editingBudget && editingBudget.has_budget ? 'Editar Orçamento' : 'Definir Limite'}</h2>
+              <h2 className="modal-title">{editingBudget && editingBudget.has_budget ? 'Editar Orçamento' : 'Definir Limite'}</h2>
               <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Categoria</label>
-                  <select
-                    className="form-control"
-                    value={formData.category_id}
-                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                    required
-                    disabled={editingBudget}
-                  >
-                    <option value="">Selecione uma categoria</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {!editingBudget && (
+                  <div className="form-group">
+                    <label>Categoria</label>
+                    <select
+                      className="form-control"
+                      value={formData.category_id}
+                      onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                      required
+                    >
+                      <option value="">Selecione uma categoria</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {editingBudget && (
+                  <div className="form-group">
+                    <label>Categoria</label>
+                    <div className="category-display">
+                      <span className="category-icon-display" style={{ color: editingBudget.category_color }}>
+                        <FiTrendingDown />
+                      </span>
+                      <span className="category-name-display">{editingBudget.category_name}</span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label>Valor Limite</label>

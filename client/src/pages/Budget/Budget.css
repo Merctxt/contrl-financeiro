@@ -189,6 +189,23 @@
 .btn-sm {
   padding: 8px 16px;
   font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--shadow);
+}
+
+.modal-title {
+  font-size: 20px;
+  color: var(--text-primary);
+  margin-top: 10px;
+  margin-left: 25px;
 }
 
 .budget-header {
@@ -275,6 +292,33 @@
 .empty-state p {
   color: var(--text-secondary);
   margin-bottom: 24px;
+}
+
+.category-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.category-icon-display {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.category-name-display {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Mobile */

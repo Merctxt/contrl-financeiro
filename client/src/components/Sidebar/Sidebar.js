@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -14,9 +14,6 @@ import {
   FiLogOut, 
   FiTarget,
   FiCheckCircle,
-  FiX,
-  FiSmartphone,
-  FiDownload,
   FiMenu
 } from 'react-icons/fi';
 import './Sidebar.css';

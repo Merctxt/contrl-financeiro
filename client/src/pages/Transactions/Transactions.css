@@ -11,6 +11,10 @@
   align-items: center;
 }
 
+.page-header-actions .btn {
+  white-space: nowrap;
+}
+
 .page-header h1 {
   font-size: 28px;
   color: var(--text-primary);
@@ -224,6 +228,16 @@
     flex-direction: column;
     gap: 16px;
     text-align: center;
+  }
+
+  .page-header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .page-header-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .page-header h1 {
