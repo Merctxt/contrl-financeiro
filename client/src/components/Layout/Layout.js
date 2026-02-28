@@ -18,8 +18,8 @@ const Layout = ({ children, showMobileLogout = false }) => {
       setSidebarCollapsed(localStorage.getItem('sidebarCollapsed') === 'true');
     };
 
-    // Verificar a cada 100ms (alternativa quando o evento storage não funciona na mesma aba)
-    const interval = setInterval(handleStorageChange, 100);
+    // Verificar a cada 1000ms (1 segundo)
+    const interval = setInterval(handleStorageChange, 1000);
 
     return () => clearInterval(interval);
   }, []);
