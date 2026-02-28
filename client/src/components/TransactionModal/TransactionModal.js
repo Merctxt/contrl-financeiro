@@ -149,12 +149,12 @@ const TransactionModal = ({ transaction, categories, onSave, onClose }) => {
                 onChange={handleChange}
               >
                 <option value="">Selecione...</option>
-                <option value="dinheiro">Dinheiro</option>
-                <option value="cartao_credito">Cartão de Crédito</option>
-                <option value="cartao_debito">Cartão de Débito</option>
+                <option value="cash">Dinheiro</option>
+                <option value="credit_card">Cartão de Crédito</option>
+                <option value="debit_card">Cartão de Débito</option>
                 <option value="pix">PIX</option>
-                <option value="transferencia">Transferência</option>
-                <option value="boleto">Boleto</option>
+                <option value="bank_transfer">Transferência</option>
+                <option value="bank_slip">Boleto</option>
               </select>
             </div>
           </div>

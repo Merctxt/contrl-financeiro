@@ -134,13 +134,26 @@ const validator = {
     }
     
     const validMethods = ['credit_card', 'debit_card', 'cash', 'pix', 'bank_transfer', 'bank_slip', 'other'];
+    
+    // Mapeamento de valores antigos (português) para novos (inglês)
+    const methodMapping = {
+      'dinheiro': 'cash',
+      'cartao_credito': 'credit_card',
+      'cartao_debito': 'debit_card',
+      'transferencia': 'bank_transfer',
+      'boleto': 'bank_slip'
+    };
+    
     const sanitized = validator.sanitizeString(method, 50)?.toLowerCase();
     
-    if (!validMethods.includes(sanitized)) {
+    // Se for um valor antigo, mapear para o novo
+    const normalized = methodMapping[sanitized] || sanitized;
+    
+    if (!validMethods.includes(normalized)) {
       return { valid: false, value: '', error: 'Método de pagamento inválido' };
     }
     
-    return { valid: true, value: sanitized };
+    return { valid: true, value: normalized };
   },
 
   /**
