@@ -39,6 +39,7 @@
 .sidebar.collapsed .sidebar-logo {
   flex-direction: column;
   gap: 4px;
+  margin-bottom: -25px;
 }
 
 .sidebar-logo .logo-icon {
@@ -196,6 +197,7 @@
   gap: 4px;
   align-items: center;
   justify-content: center;
+  margin-bottom: -20px;
 }
 
 .user-avatar {

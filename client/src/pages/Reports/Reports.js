@@ -477,9 +477,8 @@ const Reports = () => {
               </div>
             )}
           </div>
-        </div>
 
-        <div className="card year-summary">
+          <div className="card year-summary">
           <h3>Resumo Anual - {selectedYear}</h3>
           <div className="year-stats">
             <div className="year-stat">
@@ -513,6 +512,7 @@ const Reports = () => {
               </span>
             </div>
           </div>
+         </div>
         </div>
 
         {categoryData.length > 0 && (

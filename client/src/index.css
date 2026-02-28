@@ -137,7 +137,10 @@ code {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--border);
+  background: var(--warning);
+  color: var(--bg-secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-md);
 }
 
 .btn-success {

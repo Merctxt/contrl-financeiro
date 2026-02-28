@@ -526,6 +526,8 @@
   font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
+  border: none;
+  border-radius: 3px;
 }
 
 .btn-export:disabled {
