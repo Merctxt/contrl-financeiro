@@ -85,34 +85,17 @@ const Reports = () => {
   };
 
   const loadYearlyData = async () => {
-    // Fazer todas as requisições em paralelo ao invés de sequencialmente
-    const promises = [];
-    
-    for (let month = 1; month <= 12; month++) {
-      const startDate = `${selectedYear}-${String(month).padStart(2, '0')}-01`;
-      const endDate = new Date(selectedYear, month, 0).toISOString().split('T')[0];
+    try {
+      const yearlyData = await api.getYearlySummary(token, selectedYear);
       
-      promises.push(
-        api.getSummary(token, startDate, endDate)
-          .then(data => ({
-            month: months[month - 1].substring(0, 3),
-            fullMonth: months[month - 1],
-            receita: data.summary?.receita || 0,
-            despesa: data.summary?.despesa || 0,
-            saldo: (data.summary?.receita || 0) - (data.summary?.despesa || 0)
-          }))
-          .catch(() => ({
-            month: months[month - 1].substring(0, 3),
-            fullMonth: months[month - 1],
-            receita: 0,
-            despesa: 0,
-            saldo: 0
-          }))
-      );
+      if (yearlyData.months) {
+        setMonthlyData(yearlyData.months);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados anuais:', error);
+      // Fallback para array vazio em caso de erro
+      setMonthlyData([]);
     }
-    
-    const monthlyResults = await Promise.all(promises);
-    setMonthlyData(monthlyResults);
   };
 
   const formatCurrency = (value) => {

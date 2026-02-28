@@ -40,10 +40,10 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, // Necessário para algumas funcionalidades
 }));
 
-// Rate Limiting - Geral (100 requisições por 15 minutos)
+// Rate Limiting - Geral (300 requisições por 15 minutos)
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // 100 requisições por janela
+  max: 300, // 300 requisições por janela
   message: { error: 'Muitas requisições. Tente novamente em alguns minutos.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -53,7 +53,7 @@ const generalLimiter = rateLimit({
   }
 });
 
-// Rate Limiting - Autenticação (mais restritivo: 5 tentativas por 15 minutos)
+// Rate Limiting - Autenticação (mais restritivo: 10 tentativas por 15 minutos)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 10, // 10 tentativas

@@ -118,6 +118,49 @@ async function initializeDatabase() {
       ON sessions(user_id, is_active)
     `);
 
+    
+    // Índice para transactions - usado em praticamente todas as queries
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_transactions_user_date 
+      ON transactions(user_id, date DESC)
+    `);
+    
+    // Índice para filtros por categoria em transações
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_transactions_category 
+      ON transactions(category_id)
+    `);
+    
+    // Índice composto para queries de período (muito comum em relatórios)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_transactions_user_type_date 
+      ON transactions(user_id, type, date)
+    `);
+    
+    // Índice para categories por usuário
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_categories_user_type 
+      ON categories(user_id, type)
+    `);
+    
+    // Índice para budgets por usuário e período
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_budgets_user_period 
+      ON budgets(user_id, month, year)
+    `);
+    
+    // Índice para financial_goals por usuário e status
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_goals_user_status 
+      ON financial_goals(user_id, status)
+    `);
+    
+    // Índice para sessions por token_hash (lookup rápido)
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_sessions_token_hash 
+      ON sessions(token_hash)
+    `);
+
     // Adicionar constraint UNIQUE na tabela budgets se não existir
     await client.query(`
       DO $$ 

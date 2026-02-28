@@ -239,6 +239,41 @@ class TransactionController {
       res.status(500).json({ error: 'Erro ao buscar estatísticas totais' });
     }
   }
+
+  static async getYearlySummary(req, res) {
+    try {
+      const userId = req.user.id;
+      const { year } = req.query;
+      
+      // Validar ano
+      const yearNum = parseInt(year, 10);
+      if (isNaN(yearNum) || yearNum < 2000 || yearNum > 2100) {
+        return res.status(400).json({ error: 'Ano inválido' });
+      }
+
+      const monthlyData = await Transaction.getYearlySummary(userId, yearNum);
+      
+      // Calcular totais do ano
+      const yearTotals = monthlyData.reduce((acc, month) => {
+        acc.totalReceita += month.receita;
+        acc.totalDespesa += month.despesa;
+        acc.totalTransactions += month.count_receita + month.count_despesa;
+        return acc;
+      }, { totalReceita: 0, totalDespesa: 0, totalTransactions: 0 });
+      
+      res.json({ 
+        year: yearNum,
+        months: monthlyData,
+        totals: {
+          ...yearTotals,
+          saldo: yearTotals.totalReceita - yearTotals.totalDespesa
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao buscar resumo anual:', error);
+      res.status(500).json({ error: 'Erro ao buscar resumo anual' });
+    }
+  }
 }
 
 module.exports = TransactionController;

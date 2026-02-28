@@ -2,6 +2,30 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const pool = require('../config/database');
 
+/**
+ * @param {string} a - Primeira string
+ * @param {string} b - Segunda string
+ * @returns {boolean} - true se forem iguais
+ */
+const timingSafeCompare = (a, b) => {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return false;
+  }
+  
+  // Garantir mesmo tamanho para evitar vazamento de informação
+  const bufA = Buffer.from(a, 'utf8');
+  const bufB = Buffer.from(b, 'utf8');
+  
+  if (bufA.length !== bufB.length) {
+    // Ainda assim fazer a comparação para manter tempo constante
+    const dummy = Buffer.alloc(bufA.length);
+    crypto.timingSafeEqual(bufA, dummy);
+    return false;
+  }
+  
+  return crypto.timingSafeEqual(bufA, bufB);
+};
+
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -23,6 +47,12 @@ const authenticateToken = async (req, res, next) => {
     
     if (result.rows.length === 0) {
       return res.status(403).json({ error: 'Sessão inválida ou expirada' });
+    }
+    
+    // Verificação adicional timing-safe do hash
+    const storedHash = result.rows[0].token_hash;
+    if (!timingSafeCompare(tokenHash, storedHash)) {
+      return res.status(403).json({ error: 'Sessão inválida' });
     }
     
     // Atualizar última atividade

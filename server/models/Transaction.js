@@ -221,6 +221,69 @@ class Transaction {
       saldo_total: (parseFloat(row.total_receitas) || 0) - (parseFloat(row.total_despesas) || 0)
     };
   }
+
+  /**
+   * Retorna resumo mensal do ano inteiro em uma única query
+   * Evita o problema N+1 de fazer 12 requisições separadas
+   * @param {number} userId - ID do usuário
+   * @param {number} year - Ano para buscar
+   * @returns {Array} - Array com dados de cada mês
+   */
+  static async getYearlySummary(userId, year) {
+    const sql = `
+      SELECT 
+        EXTRACT(MONTH FROM date)::integer as month,
+        COALESCE(SUM(CASE WHEN type = 'receita' THEN amount ELSE 0 END), 0)::numeric::float8 as receita,
+        COALESCE(SUM(CASE WHEN type = 'despesa' THEN amount ELSE 0 END), 0)::numeric::float8 as despesa,
+        COUNT(CASE WHEN type = 'receita' THEN 1 END)::integer as count_receita,
+        COUNT(CASE WHEN type = 'despesa' THEN 1 END)::integer as count_despesa
+      FROM transactions
+      WHERE user_id = $1 AND EXTRACT(YEAR FROM date) = $2
+      GROUP BY EXTRACT(MONTH FROM date)
+      ORDER BY month
+    `;
+    
+    const result = await pool.query(sql, [userId, year]);
+    
+    // Criar array com todos os 12 meses (preenchendo meses sem dados)
+    const monthNames = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    
+    const monthsData = [];
+    for (let i = 1; i <= 12; i++) {
+      const monthData = result.rows.find(row => row.month === i);
+      
+      if (monthData) {
+        const receita = parseFloat(monthData.receita) || 0;
+        const despesa = parseFloat(monthData.despesa) || 0;
+        monthsData.push({
+          month: monthNames[i - 1].substring(0, 3),
+          fullMonth: monthNames[i - 1],
+          monthNumber: i,
+          receita,
+          despesa,
+          saldo: receita - despesa,
+          count_receita: monthData.count_receita || 0,
+          count_despesa: monthData.count_despesa || 0
+        });
+      } else {
+        monthsData.push({
+          month: monthNames[i - 1].substring(0, 3),
+          fullMonth: monthNames[i - 1],
+          monthNumber: i,
+          receita: 0,
+          despesa: 0,
+          saldo: 0,
+          count_receita: 0,
+          count_despesa: 0
+        });
+      }
+    }
+    
+    return monthsData;
+  }
 }
 
 module.exports = Transaction;

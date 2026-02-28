@@ -80,6 +80,7 @@ const api = {
     clearCachePattern('summary_');
     clearCachePattern('breakdown_');
     clearCachePattern('lifetime_stats');
+    clearCachePattern('yearly_summary_');
     
     return result;
   },
@@ -99,6 +100,7 @@ const api = {
     clearCachePattern('summary_');
     clearCachePattern('breakdown_');
     clearCachePattern('lifetime_stats');
+    clearCachePattern('yearly_summary_');
     
     return result;
   },
@@ -114,6 +116,7 @@ const api = {
     clearCachePattern('summary_');
     clearCachePattern('breakdown_');
     clearCachePattern('lifetime_stats');
+    clearCachePattern('yearly_summary_');
     
     return result;
   },
@@ -177,6 +180,23 @@ const api = {
     const data = await response.json();
     
     setCache(cacheKey, data, TTL.LONG);
+    return data;
+  },
+
+  getYearlySummary: async (token, year) => {
+    const cacheKey = `yearly_summary_${year}`;
+    const cached = getCache(cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+
+    const response = await fetch(`${API_URL}/transactions/yearly-summary?year=${year}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    
+    setCache(cacheKey, data, TTL.MEDIUM);
     return data;
   },
 
