@@ -6,7 +6,6 @@ const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// Importar rotas
 const authRoutes = require('./routes/auth');
 const transactionRoutes = require('./routes/transactions');
 const categoryRoutes = require('./routes/categories');
@@ -15,13 +14,12 @@ const sessionRoutes = require('./routes/sessions');
 const goalRoutes = require('./routes/goals');
 const budgetRoutes = require('./routes/budgets');
 
-// Inicializar banco de dados
 require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Helmet - Headers de segurança HTTP
+// Headers de segurança HTTP
 app.use(helmet({
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
@@ -39,46 +37,41 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, // Necessário para algumas funcionalidades
 }));
 
-// Rate Limiting - Geral (300 requisições por 15 minutos)
 const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 300, // 300 requisições por janela
+  windowMs: 15 * 60 * 1000,
+  max: 300,
   message: { error: 'Muitas requisições. Tente novamente em alguns minutos.' },
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => {
-    // Não aplicar rate limit em desenvolvimento
     return process.env.NODE_ENV !== 'production';
   }
 });
 
-// Rate Limiting - Autenticação (mais restritivo: 10 tentativas por 15 minutos)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 10, // 10 tentativas
+  windowMs: 15 * 60 * 1000,
+  max: 10,
   message: { error: 'Muitas tentativas de login. Tente novamente em 15 minutos.' },
   standardHeaders: true,
   legacyHeaders: false,
   skipFailedRequests: false,
 });
 
-// Rate Limiting - Recuperação de senha (3 tentativas por hora)
 const passwordResetLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hora
-  max: 3, // 3 solicitações
+  windowMs: 60 * 60 * 1000,
+  max: 3,
   message: { error: 'Muitas solicitações de recuperação de senha. Tente novamente em 1 hora.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// CORS - Configuração segura
+// CORS
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? ['https://financeiro.giovannidev.com', 'https://www.financeiro.giovannidev.com']
   : ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requisições sem origin (como apps mobile ou Postman em dev)
     if (!origin) {
       return callback(null, true);
     }
@@ -96,19 +89,15 @@ app.use(cors({
   maxAge: 86400 // Cache preflight por 24 horas
 }));
 
-// Aplicar rate limiting geral
 app.use('/api/', generalLimiter);
 
-// Rate limiting específico para rotas de autenticação
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/auth/forgot-password', passwordResetLimiter);
 
-// Body parsers com limite de tamanho para prevenir DoS
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 
-// Rotas da API
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -117,12 +106,9 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/budgets', budgetRoutes);
 
-// Servir arquivos estáticos do React em produção
 if (process.env.NODE_ENV === 'production') {
-  // Servir arquivos estáticos da pasta build
   app.use(express.static(path.join(__dirname, '../client/build')));
 
-  // Para qualquer rota que não seja API, servir o index.html do React
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
   });
@@ -133,7 +119,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Algo deu errado!' });

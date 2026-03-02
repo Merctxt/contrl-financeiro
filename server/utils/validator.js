@@ -1,8 +1,3 @@
-/**
- * Utilitários de validação e sanitização de inputs
- * Previne DoS, XSS e outras vulnerabilidades de input
- */
-
 const validator = {
   /**
    * Sanitiza strings removendo caracteres perigosos
