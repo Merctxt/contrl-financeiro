@@ -14,7 +14,6 @@ const userRoutes = require('./routes/user');
 const sessionRoutes = require('./routes/sessions');
 const goalRoutes = require('./routes/goals');
 const budgetRoutes = require('./routes/budgets');
-const notificationRoutes = require('./routes/notifications');
 
 // Inicializar banco de dados
 require('./config/database');
@@ -117,7 +116,6 @@ app.use('/api/user', userRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/budgets', budgetRoutes);
-app.use('/api/notifications', notificationRoutes);
 
 // Servir arquivos estáticos do React em produção
 if (process.env.NODE_ENV === 'production') {

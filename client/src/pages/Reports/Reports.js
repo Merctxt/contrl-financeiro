@@ -226,10 +226,9 @@ const Reports = () => {
       link.click();
       document.body.removeChild(link);
 
-      alert(`✅ Relatório exportado com sucesso!\n\nPeríodo: ${formatDate(exportStartDate)} a ${formatDate(exportEndDate)}\nTransações: ${transactions.length}\n\nReceitas: ${formatCurrency(totals.receita)}\nDespesas: ${formatCurrency(totals.despesa)}\nSaldo: ${formatCurrency(totals.receita - totals.despesa)}`);
     } catch (error) {
       console.error('Erro ao exportar relatório:', error);
-      alert('❌ Erro ao exportar relatório. Tente novamente.');
+      alert('Erro ao exportar relatório. Tente novamente.');
     } finally {
       setExporting(false);
     }

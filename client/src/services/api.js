@@ -412,14 +412,6 @@ const api = {
     return response.json();
   },
 
-  // Notificações
-  getNotificationTriggers: async (token) => {
-    const response = await fetch(`${API_URL}/notifications/triggers`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    return response.json();
-  },
-
   // Orçamentos Mensais
   getBudgets: async (token, month, year) => {
     const params = new URLSearchParams({ month, year });
