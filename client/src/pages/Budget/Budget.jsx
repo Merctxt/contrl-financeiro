@@ -1,159 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import React from 'react';
 import Layout from '../../components/Layout/Layout';
 import { FiCalendar, FiTag, FiTrendingDown, FiAlertCircle, FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { useBudgetLogic, MONTHS, YEARS, formatCurrency, getProgressColor } from './Budget.logic';
 import './Budget.css';
 
 const Budget = () => {
-  const { token } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [budgets, setBudgets] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [totalBudget, setTotalBudget] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [showModal, setShowModal] = useState(false);
-  const [editingBudget, setEditingBudget] = useState(null);
-  const [formData, setFormData] = useState({
-    category_id: '',
-    limit_amount: ''
-  });
-  const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+  const {
+    loading,
+    budgets,
+    categories,
+    totalBudget,
+    selectedMonth,
+    selectedYear,
+    showModal,
+    editingBudget,
+    formData,
+    saving,
+    deletingId,
+    setSelectedMonth,
+    setSelectedYear,
+    handleOpenModal,
+    handleCloseModal,
+    handleSubmit,
+    handleDelete,
+    handleFormChange,
+    getStatusIcon,
+    navigate
+  } = useBudgetLogic();
 
-  const months = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-
-  const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i);
-
-  useEffect(() => {
-    loadData();
-  }, [selectedMonth, selectedYear]);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [budgetsData, categoriesData, totalData] = await Promise.all([
-        api.getAllCategoriesWithBudgets(token, selectedMonth, selectedYear),
-        api.getCategories(token, 'despesa'),
-        api.getTotalBudget(token, selectedMonth, selectedYear)
-      ]);
-
-      if (budgetsData.budgets) {
-        setBudgets(budgetsData.budgets);
-      }
-
-      if (categoriesData.categories) {
-        setCategories(categoriesData.categories);
-      }
-
-      if (totalData.total) {
-        setTotalBudget(totalData.total);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      alert('Erro ao carregar planejamento');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenModal = (budget = null) => {
-    if (budget) {
-      setEditingBudget(budget);
-      setFormData({
-        category_id: budget.category_id,
-        limit_amount: budget.limit_amount > 0 ? budget.limit_amount : ''
-      });
-    } else {
-      setEditingBudget(null);
-      setFormData({
-        category_id: '',
-        limit_amount: ''
-      });
-    }
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingBudget(null);
-    setFormData({
-      category_id: '',
-      limit_amount: ''
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-
-    try {
-      const data = {
-        ...formData,
-        month: selectedMonth,
-        year: selectedYear,
-        limit_amount: parseFloat(formData.limit_amount)
-      };
-
-      // Se tem ID e has_budget = true, é UPDATE. Caso contrário, é CREATE
-      if (editingBudget && editingBudget.id && editingBudget.has_budget) {
-        await api.updateBudget(token, editingBudget.id, { limit_amount: data.limit_amount });
-      } else {
-        await api.createBudget(token, data);
-      }
-
-      await loadData();
-      handleCloseModal();
-    } catch (error) {
-      console.error('Erro ao salvar orçamento:', error);
-      alert('Erro ao salvar orçamento');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Deseja realmente excluir este orçamento?')) {
-      return;
-    }
-
-    setDeletingId(id);
-    try {
-      await api.deleteBudget(token, id);
-      await loadData();
-    } catch (error) {
-      console.error('Erro ao excluir orçamento:', error);
-      alert('Erro ao excluir orçamento');
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value || 0);
-  };
-
-  const getProgressColor = (percentage) => {
-    if (percentage >= 100) return '#ef4444'; // Vermelho
-    if (percentage >= 80) return '#f59e0b'; // Laranja
-    if (percentage >= 60) return '#eab308'; // Amarelo
-    return '#10b981'; // Verde
-  };
-
-  const getStatusIcon = (percentage) => {
-    if (percentage >= 100) {
+  const renderStatusIcon = (percentage) => {
+    const status = getStatusIcon(percentage);
+    if (status === 'danger') {
       return <FiAlertCircle className="status-icon danger" />;
     }
-    if (percentage >= 80) {
+    if (status === 'warning') {
       return <FiAlertCircle className="status-icon warning" />;
     }
     return null;
@@ -187,7 +67,7 @@ const Budget = () => {
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
           >
-            {months.map((month, index) => (
+            {MONTHS.map((month, index) => (
               <option key={index} value={index + 1}>{month}</option>
             ))}
           </select>
@@ -196,7 +76,7 @@ const Budget = () => {
             value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
           >
-            {years.map((year) => (
+            {YEARS.map((year) => (
               <option key={year} value={year}>{year}</option>
             ))}
           </select>
@@ -227,7 +107,7 @@ const Budget = () => {
               <div className="total-progress">
                 <div className="progress-info">
                   <span>{totalBudget.percentage}% utilizado</span>
-                  {getStatusIcon(parseFloat(totalBudget.percentage))}
+                  {renderStatusIcon(parseFloat(totalBudget.percentage))}
                 </div>
                 <div className="progress-bar">
                   <div
@@ -311,7 +191,7 @@ const Budget = () => {
                       <span className={`remaining ${budget.remaining >= 0 ? 'positive' : 'negative'}`}>
                         {budget.remaining >= 0 ? 'Restam' : 'Excedeu'} {formatCurrency(Math.abs(budget.remaining))}
                       </span>
-                      {getStatusIcon(parseFloat(budget.percentage))}
+                      {renderStatusIcon(parseFloat(budget.percentage))}
                     </div>
                     <div className="progress-bar">
                       <div
@@ -340,7 +220,7 @@ const Budget = () => {
                     <select
                       className="form-control"
                       value={formData.category_id}
-                      onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                      onChange={(e) => handleFormChange('category_id', e.target.value)}
                       required
                     >
                       <option value="">Selecione uma categoria</option>
@@ -371,7 +251,7 @@ const Budget = () => {
                     type="number"
                     className="form-control"
                     value={formData.limit_amount}
-                    onChange={(e) => setFormData({ ...formData, limit_amount: e.target.value })}
+                    onChange={(e) => handleFormChange('limit_amount', e.target.value)}
                     placeholder="0.00"
                     step="0.01"
                     min="0"

@@ -2,17 +2,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
-import Login from './pages/Auth/Login';
-import Register from './pages/Auth/Register';
-import ResetPassword from './pages/Auth/ResetPassword';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Transactions from './pages/Transactions/Transactions';
-import Categories from './pages/Categories/Categories';
-import Budget from './pages/Budget/Budget';
-import Goals from './pages/goals/goals';
-import Reports from './pages/Reports/Reports';
-import Settings from './pages/Settings/Settings';
-import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy';
+import { Login, Register, ResetPassword } from './pages/Auth';
+import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
+import Categories from './pages/Categories';
+import Budget from './pages/Budget';
+import Goals from './pages/goals';
+import Reports from './pages/Reports';
+import Settings from './pages/Settings';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const PrivateRoute = ({ children }) => {
   const { token, loading } = useAuth();

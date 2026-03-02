@@ -1,108 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout';
 import { FiPlus, FiEdit2, FiTrash2, FiTrendingUp, FiTrendingDown, FiArrowLeft } from 'react-icons/fi';
+import { useCategoriesLogic, COLOR_OPTIONS } from './Categories.logic';
 import './Categories.css';
-import { Link } from 'react-router-dom';
 
 const Categories = () => {
-  const { token } = useAuth();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
-  const [creatingDefaults, setCreatingDefaults] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    type: 'despesa',
-    color: '#6366f1',
-    icon: 'FiTrendingDown'
-  });
-
-  const colorOptions = [
-    '#ef4444', '#f59e0b', '#10b981', '#6366f1', '#ec4899', 
-    '#14b8a6', '#8b5cf6', '#f43f5e', '#3b82f6', '#64748b'
-  ];
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
-  const loadCategories = async () => {
-    try {
-      const data = await api.getCategories(token);
-      if (data.categories) {
-        setCategories(data.categories);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar categorias:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      if (editingCategory) {
-        await api.updateCategory(token, editingCategory.id, formData);
-      } else {
-        await api.createCategory(token, formData);
-      }
-      setShowForm(false);
-      setEditingCategory(null);
-      setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: 'FiTrendingDown' });
-      loadCategories();
-    } catch (error) {
-      console.error('Erro ao salvar categoria:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleEdit = (category) => {
-    setEditingCategory(category);
-    setFormData({
-      name: category.name,
-      type: category.type,
-      color: category.color,
-      icon: category.icon
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta categoria?')) {
-      setDeletingId(id);
-      try {
-        await api.deleteCategory(token, id);
-        loadCategories();
-      } catch (error) {
-        console.error('Erro ao excluir categoria:', error);
-      } finally {
-        setDeletingId(null);
-      }
-    }
-  };
-
-  const handleCreateDefaults = async () => {
-    setCreatingDefaults(true);
-    try {
-      await api.createDefaultCategories(token);
-      loadCategories();
-    } catch (error) {
-      console.error('Erro ao criar categorias padrão:', error);
-    } finally {
-      setCreatingDefaults(false);
-    }
-  };
-
-  const receitaCategories = categories.filter(cat => cat.type === 'receita');
-  const despesaCategories = categories.filter(cat => cat.type === 'despesa');
+  const {
+    token,
+    categories,
+    loading,
+    saving,
+    deletingId,
+    creatingDefaults,
+    showForm,
+    editingCategory,
+    formData,
+    receitaCategories,
+    despesaCategories,
+    setFormData,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleCreateDefaults,
+    openNewForm,
+    closeForm
+  } = useCategoriesLogic();
 
   if (loading) {
     return (
@@ -116,11 +39,11 @@ const Categories = () => {
     <Layout>
       <div className="categories-page fade-in">
         <div>
-            <Link to={token ? "/transactions" : "/login"} className="back-link">
-              <FiArrowLeft className="nav-icon" />
-              <span>Voltar</span>
-            </Link>
-          </div>
+          <Link to={token ? "/transactions" : "/login"} className="back-link">
+            <FiArrowLeft className="nav-icon" />
+            <span>Voltar</span>
+          </Link>
+        </div>
         <div className="page-header">
           <div>
             <h1>Categorias</h1>
@@ -145,11 +68,7 @@ const Categories = () => {
             )}
             <button 
               className="btn btn-primary"
-              onClick={() => {
-                setEditingCategory(null);
-                setFormData({ name: '', type: 'despesa', color: '#6366f1', icon: 'FiTrendingDown' });
-                setShowForm(true);
-              }}
+              onClick={openNewForm}
             >
               <FiPlus /> Nova Categoria
             </button>
@@ -198,7 +117,7 @@ const Categories = () => {
               <div className="form-group">
                 <label>Cor</label>
                 <div className="color-grid">
-                  {colorOptions.map((color) => (
+                  {COLOR_OPTIONS.map((color) => (
                     <button
                       type="button"
                       key={color}
@@ -214,10 +133,7 @@ const Categories = () => {
                 <button 
                   type="button" 
                   className="btn btn-secondary"
-                  onClick={() => {
-                    setShowForm(false);
-                    setEditingCategory(null);
-                  }}
+                  onClick={closeForm}
                   disabled={saving}
                 >
                   Cancelar

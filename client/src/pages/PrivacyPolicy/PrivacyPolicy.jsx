@@ -1,17 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import Layout from '../../components/Layout/Layout';
 import { FiArrowLeft, FiShield } from 'react-icons/fi';
+import { usePrivacyPolicyLogic } from './PrivacyPolicy.logic';
 import './PrivacyPolicy.css';
 
 const PrivacyPolicy = () => {
-  const { token } = useAuth();
+  const { isAuthenticated, backLink } = usePrivacyPolicyLogic();
 
   const content = (
     <div className="privacy-policy-page fade-in">
       <div className="privacy-header">
-        <Link to={token ? "/settings" : "/login"} className="back-link">
+        <Link to={backLink} className="back-link">
           <FiArrowLeft /> Voltar
         </Link>
         <div className="header-title">
@@ -168,8 +168,7 @@ const PrivacyPolicy = () => {
     </div>
   );
 
-  // Se o usuário estiver logado, usa o Layout. Senão, renderiza direto
-  if (token) {
+  if (isAuthenticated) {
     return <Layout>{content}</Layout>;
   }
 

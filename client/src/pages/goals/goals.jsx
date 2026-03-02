@@ -1,163 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import React from 'react';
 import Layout from '../../components/Layout/Layout';
 import { FiTarget, FiPlus, FiEdit2, FiTrash2, FiCheck, FiCalendar, FiTrendingUp, FiDollarSign } from 'react-icons/fi';
+import { useGoalsLogic } from './goals.logic';
 import './goals.css';
 
 const Goals = () => {
-  const { token } = useAuth();
-  const [goals, setGoals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [updatingId, setUpdatingId] = useState(null);
-  const [completingId, setCompletingId] = useState(null);
-  const [deletingId, setDeletingId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [editingGoal, setEditingGoal] = useState(null);
-  const [filter, setFilter] = useState('active');
-
-  // Estados do formulário
-  const [formData, setFormData] = useState({
-    name: '',
-    target_amount: '',
-    current_amount: '',
-    deadline: '',
-    status: 'active'
-  });
-
-  useEffect(() => {
-    loadGoals();
-  }, [filter]);
-
-  const loadGoals = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getGoals(token, filter === 'all' ? null : filter);
-      if (data.goals) {
-        setGoals(data.goals);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar metas:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenModal = (goal = null) => {
-    if (goal) {
-      setEditingGoal(goal);
-      setFormData({
-        name: goal.name,
-        target_amount: goal.target_amount,
-        current_amount: goal.current_amount,
-        deadline: goal.deadline.split('T')[0],
-        status: goal.status
-      });
-    } else {
-      setEditingGoal(null);
-      setFormData({
-        name: '',
-        target_amount: '',
-        current_amount: '0',
-        deadline: '',
-        status: 'active'
-      });
-    }
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingGoal(null);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      if (editingGoal) {
-        await api.updateGoal(token, editingGoal.id, formData);
-      } else {
-        await api.createGoal(token, formData);
-      }
-      handleCloseModal();
-      loadGoals();
-    } catch (error) {
-      console.error('Erro ao salvar meta:', error);
-      alert('Erro ao salvar meta');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleUpdateAmount = async (goalId, currentAmount) => {
-    const newAmount = prompt('Digite o valor já guardado:', currentAmount);
-    if (newAmount === null) return;
-
-    const amount = parseFloat(newAmount);
-    if (isNaN(amount) || amount < 0) {
-      alert('Valor inválido');
-      return;
-    }
-
-    setUpdatingId(goalId);
-    try {
-      await api.updateGoalAmount(token, goalId, amount);
-      loadGoals();
-    } catch (error) {
-      console.error('Erro ao atualizar valor:', error);
-      alert('Erro ao atualizar valor');
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const handleComplete = async (goalId) => {
-    if (!window.confirm('Parabéns! Deseja marcar esta meta como concluída?')) {
-      return;
-    }
-
-    setCompletingId(goalId);
-    try {
-      await api.completeGoal(token, goalId);
-      loadGoals();
-    } catch (error) {
-      console.error('Erro ao concluir meta:', error);
-      alert('Erro ao concluir meta');
-    } finally {
-      setCompletingId(null);
-    }
-  };
-
-  const handleDelete = async (goalId) => {
-    if (!window.confirm('Tem certeza que deseja excluir esta meta?')) {
-      return;
-    }
-
-    setDeletingId(goalId);
-    try {
-      await api.deleteGoal(token, goalId);
-      loadGoals();
-    } catch (error) {
-      console.error('Erro ao excluir meta:', error);
-      alert('Erro ao excluir meta');
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value || 0);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  };
+  const {
+    goals,
+    loading,
+    saving,
+    updatingId,
+    completingId,
+    deletingId,
+    showModal,
+    editingGoal,
+    filter,
+    formData,
+    setFilter,
+    handleOpenModal,
+    handleCloseModal,
+    handleSubmit,
+    handleUpdateAmount,
+    handleComplete,
+    handleDelete,
+    handleFormChange,
+    formatCurrency,
+    formatDate
+  } = useGoalsLogic();
 
   if (loading) {
     return (
@@ -348,7 +217,7 @@ const Goals = () => {
                     id="name"
                     className="form-control"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => handleFormChange('name', e.target.value)}
                     placeholder="Ex: Viagem para o Japão"
                     required
                   />
@@ -362,7 +231,7 @@ const Goals = () => {
                       id="target_amount"
                       className="form-control"
                       value={formData.target_amount}
-                      onChange={(e) => setFormData({...formData, target_amount: e.target.value})}
+                      onChange={(e) => handleFormChange('target_amount', e.target.value)}
                       placeholder="15000"
                       step="0.01"
                       min="0"
@@ -376,7 +245,7 @@ const Goals = () => {
                       id="current_amount"
                       className="form-control"
                       value={formData.current_amount}
-                      onChange={(e) => setFormData({...formData, current_amount: e.target.value})}
+                      onChange={(e) => handleFormChange('current_amount', e.target.value)}
                       placeholder="0"
                       step="0.01"
                       min="0"
@@ -392,7 +261,7 @@ const Goals = () => {
                       id="deadline"
                       className="form-control"
                       value={formData.deadline}
-                      onChange={(e) => setFormData({...formData, deadline: e.target.value})}
+                      onChange={(e) => handleFormChange('deadline', e.target.value)}
                       required
                     />
                   </div>
@@ -403,7 +272,7 @@ const Goals = () => {
                         id="status"
                         className="form-control"
                         value={formData.status}
-                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                        onChange={(e) => handleFormChange('status', e.target.value)}
                       >
                         <option value="active">Ativa</option>
                         <option value="completed">Concluída</option>

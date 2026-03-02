@@ -1,129 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import api from '../../services/api';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../../components/Layout/Layout';
 import TransactionModal from '../../components/TransactionModal/TransactionModal';
-import { FiPlus, FiEdit2, FiTrash2, FiFilter, FiX, FiDollarSign, FiTag } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiDollarSign, FiTag } from 'react-icons/fi';
+import { useTransactionsLogic, formatCurrency, formatDate } from './Transactions.logic';
 import './Transactions.css';
-import { Link } from 'react-router-dom';
 
 const Transactions = () => {
-  const { token } = useAuth();
-  const [transactions, setTransactions] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [deletingId, setDeletingId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState(null);
-  const [filters, setFilters] = useState({
-    type: '',
-    category_id: '',
-    startDate: '',
-    endDate: ''
-  });
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [transactionsData, categoriesData] = await Promise.all([
-        api.getTransactions(token, filters),
-        api.getCategories(token)
-      ]);
-
-      if (transactionsData.transactions) {
-        setTransactions(transactionsData.transactions);
-      }
-
-      if (categoriesData.categories) {
-        setCategories(categoriesData.categories);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFilter = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getTransactions(token, filters);
-      if (data.transactions) {
-        setTransactions(data.transactions);
-      }
-    } catch (error) {
-      console.error('Erro ao filtrar transações:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      type: '',
-      category_id: '',
-      startDate: '',
-      endDate: ''
-    });
-    loadData();
-  };
-
-  const handleSaveTransaction = async (data) => {
-    try {
-      if (editingTransaction) {
-        await api.updateTransaction(token, editingTransaction.id, data);
-      } else {
-        await api.createTransaction(token, data);
-      }
-      setShowModal(false);
-      setEditingTransaction(null);
-      loadData();
-    } catch (error) {
-      console.error('Erro ao salvar transação:', error);
-    }
-  };
-
-  const handleEdit = (transaction) => {
-    setEditingTransaction(transaction);
-    setShowModal(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir esta transação?')) {
-      setDeletingId(id);
-      try {
-        await api.deleteTransaction(token, id);
-        loadData();
-      } catch (error) {
-        console.error('Erro ao excluir transação:', error);
-      } finally {
-        setDeletingId(null);
-      }
-    }
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value || 0);
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  };
-
-  const totalReceitas = transactions
-    .filter(t => t.type === 'receita')
-    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
-
-  const totalDespesas = transactions
-    .filter(t => t.type === 'despesa')
-    .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+  const {
+    transactions,
+    categories,
+    loading,
+    deletingId,
+    showModal,
+    editingTransaction,
+    filters,
+    totalReceitas,
+    totalDespesas,
+    setFilters,
+    handleFilter,
+    handleClearFilters,
+    handleSaveTransaction,
+    handleEdit,
+    handleDelete,
+    openNewModal,
+    closeModal
+  } = useTransactionsLogic();
 
   if (loading) {
     return (
@@ -149,10 +51,7 @@ const Transactions = () => {
 
             <button 
               className="btn btn-primary"
-              onClick={() => {
-                setEditingTransaction(null);
-                setShowModal(true);
-              }}
+              onClick={openNewModal}
             >
               <FiPlus /> Nova Transação
             </button>
@@ -307,7 +206,7 @@ const Transactions = () => {
               <p>Nenhuma transação encontrada</p>
               <button 
                 className="btn btn-primary"
-                onClick={() => setShowModal(true)}
+                onClick={openNewModal}
               >
                 <FiPlus /> Adicionar Transação
               </button>
@@ -320,10 +219,7 @@ const Transactions = () => {
             transaction={editingTransaction}
             categories={categories}
             onSave={handleSaveTransaction}
-            onClose={() => {
-              setShowModal(false);
-              setEditingTransaction(null);
-            }}
+            onClose={closeModal}
           />
         )}
       </div>
