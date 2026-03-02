@@ -19,6 +19,8 @@ export const useTransactionsLogic = () => {
     startDate: '',
     endDate: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     loadData();
@@ -122,9 +124,23 @@ export const useTransactionsLogic = () => {
     .filter(t => t.type === 'despesa')
     .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
 
+  // Paginação
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const paginatedTransactions = transactions.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return {
     // Estado
-    transactions,
+    transactions: paginatedTransactions,
+    allTransactions: transactions,
     categories,
     loading,
     deletingId,
@@ -133,6 +149,10 @@ export const useTransactionsLogic = () => {
     filters,
     totalReceitas,
     totalDespesas,
+    // Paginação
+    currentPage,
+    totalPages,
+    itemsPerPage,
     // Ações
     setFilters,
     handleFilter,
@@ -141,7 +161,8 @@ export const useTransactionsLogic = () => {
     handleEdit,
     handleDelete,
     openNewModal,
-    closeModal
+    closeModal,
+    goToPage
   };
 };
 

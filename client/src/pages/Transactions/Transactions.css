@@ -222,6 +222,50 @@
   }
 }
 
+/* Paginação */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 16px;
+}
+
+.pagination-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.pagination-info {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0 12px;
+}
+
 @media (max-width: 768px) {
   .transactions-page {
     padding-bottom: 80px;
@@ -299,14 +343,39 @@
     font-size: 16px;
   }
 
-  .card {
-    padding: 12px;
+  /* Tabela mobile full-width */
+  .table-card {
+    padding: 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .table-card .transactions-table-wrapper {
+    width: 100%;
+    border-radius: 0;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .table-card .transactions-table {
+    width: 100%;
+    min-width: 100%;
   }
 
   .transactions-table th,
   .transactions-table td {
     padding: 12px 8px;
     font-size: 13px;
+  }
+
+  .transactions-table th:first-child,
+  .transactions-table td:first-child {
+    padding-left: 12px;
+  }
+
+  .transactions-table th:last-child,
+  .transactions-table td:last-child {
+    padding-right: 12px;
   }
 
   .transactions-table th:nth-child(3),
@@ -337,5 +406,24 @@
 
   .empty-state .btn {
     width: 100%;
+  }
+
+  /* Paginação mobile */
+  .pagination {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .pagination-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .pagination-info {
+    width: 100%;
+    text-align: center;
+    order: -1;
+    margin-bottom: 8px;
   }
 }

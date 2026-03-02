@@ -9,6 +9,7 @@ import './Transactions.css';
 const Transactions = () => {
   const {
     transactions,
+    allTransactions,
     categories,
     loading,
     deletingId,
@@ -17,6 +18,8 @@ const Transactions = () => {
     filters,
     totalReceitas,
     totalDespesas,
+    currentPage,
+    totalPages,
     setFilters,
     handleFilter,
     handleClearFilters,
@@ -24,7 +27,8 @@ const Transactions = () => {
     handleEdit,
     handleDelete,
     openNewModal,
-    closeModal
+    closeModal,
+    goToPage
   } = useTransactionsLogic();
 
   if (loading) {
@@ -135,8 +139,9 @@ const Transactions = () => {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card table-card">
           {transactions.length > 0 ? (
+            <>
             <div className="transactions-table-wrapper">
               <table className="transactions-table">
                 <thead>
@@ -200,6 +205,64 @@ const Transactions = () => {
                 </tbody>
               </table>
             </div>
+            
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button 
+                  className="pagination-btn"
+                  onClick={() => goToPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  «
+                </button>
+                <button 
+                  className="pagination-btn"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  ‹
+                </button>
+                
+                {[...Array(totalPages)].map((_, i) => {
+                  const page = i + 1;
+                  // Mostrar apenas páginas próximas da atual
+                  if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
+                    return (
+                      <button
+                        key={page}
+                        className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                        onClick={() => goToPage(page)}
+                      >
+                        {page}
+                      </button>
+                    );
+                  } else if (page === currentPage - 2 || page === currentPage + 2) {
+                    return <span key={page} className="pagination-info">...</span>;
+                  }
+                  return null;
+                })}
+                
+                <button 
+                  className="pagination-btn"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  ›
+                </button>
+                <button 
+                  className="pagination-btn"
+                  onClick={() => goToPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  »
+                </button>
+                
+                <span className="pagination-info">
+                  {allTransactions.length} registros
+                </span>
+              </div>
+            )}
+          </>
           ) : (
             <div className="empty-state">
               <FiDollarSign className="empty-icon" size={48} />
