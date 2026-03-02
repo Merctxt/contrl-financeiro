@@ -216,29 +216,6 @@ const Settings = () => {
             )}
           </div>
 
-          {/* App Mobile - visível apenas no mobile */}
-          <div className="card settings-card mobile-app-card">
-            <h3><FiSmartphone /> Atualizações do App</h3>
-            <div className="mobile-app-info">
-              <p className="app-description">
-                Mantenha seu aplicativo sempre atualizado para ter acesso às últimas funcionalidades e correções!
-              </p>
-              <ul className="app-features">
-                <li>✓ Novos recursos e melhorias</li>
-                <li>✓ Correção de bugs</li>
-                <li>✓ Melhor desempenho e segurança</li>
-              </ul>
-              <a 
-                href="https://github.com/Merctxt/contrl-financeiro/releases" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="btn btn-primary btn-download-app"
-              >
-                <FiDownload /> Verificar Atualizações
-              </a>
-            </div>
-          </div>
-
           {/* Aparência */}
           <div className="card settings-card">
             <h3>{theme === 'dark' ? <FiMoon /> : <FiSun />} Aparência</h3>

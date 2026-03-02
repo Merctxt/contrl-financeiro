@@ -168,46 +168,6 @@
   margin: 20px auto;
 }
 
-/* App Mobile Card - escondido por padrão (apenas mobile) */
-.mobile-app-card {
-  display: none;
-}
-
-.mobile-app-info {
-  text-align: center;
-}
-
-.app-description {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.app-features {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0;
-  text-align: left;
-}
-
-.app-features li {
-  padding: 8px 0;
-  color: var(--text);
-  font-size: 14px;
-}
-
-.btn-download-app {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 16px;
-  font-size: 15px;
-  padding: 12px 24px;
-}
-
 /* Theme Toggle */
 .theme-toggle {
   display: flex;
@@ -431,11 +391,6 @@ a {
     gap: 16px;
     text-align: center;
     padding: 14px;
-  }
-
-  /* Mostrar card de app mobile apenas no mobile */
-  .mobile-app-card {
-    display: block;
   }
 
   /* Sessões responsivo */
