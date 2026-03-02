@@ -10,7 +10,10 @@ export const useDashboardLogic = () => {
   const [summary, setSummary] = useState({ receita: 0, despesa: 0, saldo: 0 });
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
+  const [allGoals, setAllGoals] = useState([]);
   const [transactionCount, setTransactionCount] = useState(0);
+  const [totalTransactionCount, setTotalTransactionCount] = useState(0);
+  const [lifetimeStats, setLifetimeStats] = useState({ total_receitas: 0, total_despesas: 0, saldo_total: 0 });
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('month');
   const [financialScore, setFinancialScore] = useState(0);
@@ -51,11 +54,23 @@ export const useDashboardLogic = () => {
     try {
       const { startDate, endDate } = getDateRange();
 
-      const [summaryData, transactionsData, goalsData, allTransactionsData] = await Promise.all([
+      // Dados do período selecionado + dados globais para o score
+      const [
+        summaryData, 
+        transactionsData, 
+        goalsData, 
+        allTransactionsData,
+        lifetimeData,
+        allTransactionsGlobal,
+        allGoalsData
+      ] = await Promise.all([
         api.getSummary(token, startDate, endDate),
         api.getTransactions(token, { limit: 5 }),
         api.getGoals(token, 'active'),
-        api.getTransactions(token, { startDate, endDate })
+        api.getTransactions(token, { startDate, endDate }),
+        api.getLifetimeStats(token),
+        api.getTransactions(token, {}),  // Todas as transações (sem filtro)
+        api.getGoals(token)               // Todas as metas
       ]);
 
       if (summaryData.summary) {
@@ -74,11 +89,24 @@ export const useDashboardLogic = () => {
         setTransactionCount(allTransactionsData.transactions.length);
       }
 
-      // Calcular score financeiro
+      // Dados globais para o score
+      if (lifetimeData.stats) {
+        setLifetimeStats(lifetimeData.stats);
+      }
+
+      if (allTransactionsGlobal.transactions) {
+        setTotalTransactionCount(allTransactionsGlobal.transactions.length);
+      }
+
+      if (allGoalsData.goals) {
+        setAllGoals(allGoalsData.goals);
+      }
+
+      // Calcular score financeiro com dados de TODO O PERÍODO
       const score = calculateFinancialScore(
-        summaryData.summary,
-        allTransactionsData.transactions?.length || 0,
-        goalsData.goals || []
+        lifetimeData.stats,
+        allTransactionsGlobal.transactions?.length || 0,
+        allGoalsData.goals || []
       );
       setFinancialScore(score);
     } catch (error) {
@@ -89,49 +117,73 @@ export const useDashboardLogic = () => {
     }
   };
 
-  const calculateFinancialScore = (summaryData, transactionsCount, goalsData) => {
+  const calculateFinancialScore = (lifetimeData, transactionsCount, goalsData) => {
     let score = 0;
 
-    // 30% - Disciplina (registros no mês)
-    const disciplineScore = Math.min((transactionsCount / 10) * 300, 300);
+    // 30% - Disciplina (total de registros)
+    // Considera bom ter pelo menos 20 transações no histórico
+    const disciplineScore = Math.min((transactionsCount / 20) * 300, 300);
     score += disciplineScore;
 
-    // 30% - Controle (gastos vs receita)
-    const receita = parseFloat(summaryData?.receita) || 0;
-    const despesa = parseFloat(summaryData?.despesa) || 0;
+    // 40% - Controle (gastos vs receita de todo o período)
+    const receita = parseFloat(lifetimeData?.total_receitas) || 0;
+    const despesa = parseFloat(lifetimeData?.total_despesas) || 0;
     
     if (receita > 0) {
       const spendingRatio = despesa / receita;
-      if (spendingRatio <= 0.5) {
-        score += 300;
-      } else if (spendingRatio <= 0.7) {
+      if (spendingRatio <= 0.3) {
+        score += 400;
+      } else if (spendingRatio <= 0.4) {
+        score += 320;
+      } else if (spendingRatio <= 0.5) {
         score += 250;
-      } else if (spendingRatio <= 0.9) {
+      } else if (spendingRatio <= 0.6) {
         score += 150;
+      } else if (spendingRatio <= 0.7) {
+        score += 110;
+      } else if (spendingRatio <= 0.8) {
+        score += 50;
       } else if (spendingRatio < 1) {
-        score += 100;
-      }
+        score += 20;
+      } else if (spendingRatio < 1.2) {
+        score += -10;
+      } else if (spendingRatio < 1.3) {
+        score += -50;
+      } else if (spendingRatio < 1.4) {
+        score += -100;
+      } else {
+        score += -200;
     }
+  }
 
-    // 20% - Crescimento (saldo positivo)
-    const saldo = receita - despesa;
+    // 20% - Crescimento (saldo final positivo ou negativo)
+    const saldo = parseFloat(lifetimeData?.saldo_total);
     if (saldo > 0) {
-      const growthRatio = saldo / (receita || 1);
-      score += Math.min(growthRatio * 1000, 200);
+      score += 200;  // Saldo positivo: pontuação máxima
+    } else if (saldo < 0) {
+      score += -100; // Saldo negativo: penalização
     }
 
-    // 20% - Metas (cumprimento)
+    // 10% - Metas (cumprimento)
     if (goalsData && goalsData.length > 0) {
       const completedGoals = goalsData.filter(g => g.status === 'completed').length;
       const activeGoals = goalsData.filter(g => g.status === 'active');
       
-      score += completedGoals * 50;
+      // Max 100 pts (10%)
+      const completedScore = Math.min(completedGoals * 25, 50);
+      score += completedScore;
       
+      // Progresso das metas ativas (max 50 pts)
+      let activeProgress = 0;
       activeGoals.forEach(goal => {
         const progress = (parseFloat(goal.current_amount) / parseFloat(goal.target_amount)) * 100;
-        score += Math.min(progress, 100) * 0.5;
+        activeProgress += Math.min(progress, 100);
       });
+      if (activeGoals.length > 0) {
+        score += Math.min((activeProgress / activeGoals.length) * 0.5, 50);
+      }
     } else {
+      // Sem metas = 50% do score de metas
       score += 50;
     }
 
@@ -144,7 +196,9 @@ export const useDashboardLogic = () => {
     summary,
     recentTransactions,
     goals,
-    transactionCount,
+    totalTransactionCount,
+    lifetimeStats,
+    allGoals,
     loading,
     period,
     financialScore,

@@ -17,7 +17,9 @@ const Dashboard = () => {
     summary,
     recentTransactions,
     goals,
-    transactionCount,
+    totalTransactionCount,
+    lifetimeStats,
+    allGoals,
     loading,
     period,
     financialScore,
@@ -132,26 +134,26 @@ const Dashboard = () => {
             <div className="score-breakdown">
               <div className="score-item">
                 <span className="score-item-label">Disciplina</span>
-                <span className="score-item-desc">{transactionCount} registros</span>
+                <span className="score-item-desc">{totalTransactionCount} registros</span>
               </div>
               <div className="score-item">
                 <span className="score-item-label">Controle</span>
                 <span className="score-item-desc">
-                  {summary.receita > 0 
-                    ? `${((summary.despesa / summary.receita) * 100).toFixed(0)}% da renda` 
+                  {parseFloat(lifetimeStats.total_receitas) > 0 
+                    ? `${((parseFloat(lifetimeStats.total_despesas) / parseFloat(lifetimeStats.total_receitas)) * 100).toFixed(0)}% gastos` 
                     : 'N/A'}
                 </span>
               </div>
               <div className="score-item">
                 <span className="score-item-label">Crescimento</span>
                 <span className="score-item-desc">
-                  {summary.saldo >= 0 ? 'Saldo positivo' : 'Saldo negativo'}
+                  {parseFloat(lifetimeStats.saldo_total) >= 0 ? 'Saldo positivo' : 'Saldo negativo'}
                 </span>
               </div>
               <div className="score-item">
                 <span className="score-item-label">Metas</span>
                 <span className="score-item-desc">
-                  {goals.length} {goals.length === 1 ? 'meta ativa' : 'metas ativas'}
+                  {allGoals.filter(g => g.status === 'completed').length} concluídas, {allGoals.filter(g => g.status === 'active').length} ativas
                 </span>
               </div>
             </div>
